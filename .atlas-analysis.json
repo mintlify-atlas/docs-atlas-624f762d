@@ -1,0 +1,111 @@
+{
+  "projectType": "sdk-library",
+  "projectName": "React Voice Visualizer",
+  "projectDescription": "A React library for audio recording and real-time visualization using the Web Audio API",
+  "theme": "palm",
+  "primaryColor": "#cb0404",
+  "lightColor": "#f3d2d2",
+  "darkColor": "#e37b84",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "installation",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/basic-usage",
+              "guides/customization",
+              "guides/custom-ui",
+              "guides/preloaded-audio",
+              "guides/error-handling"
+            ]
+          },
+          {
+            "group": "Examples",
+            "pages": [
+              "examples/basic-recorder",
+              "examples/custom-styling",
+              "examples/file-upload",
+              "examples/callbacks"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Hooks",
+            "pages": [
+              "api/use-voice-visualizer"
+            ]
+          },
+          {
+            "group": "Components",
+            "pages": [
+              "api/voice-visualizer"
+            ]
+          },
+          {
+            "group": "TypeScript",
+            "pages": [
+              "api/types"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Migration",
+        "groups": [
+          {
+            "group": "Version Guides",
+            "pages": [
+              "migration/v2"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Real-time audio visualization using Web Audio API",
+    "Audio recording with MediaRecorder API",
+    "Playback controls with timeline navigation",
+    "Fully customizable visual appearance",
+    "TypeScript support with complete type definitions",
+    "Responsive design for mobile and desktop",
+    "Preloaded audio blob support",
+    "Lifecycle callbacks for recording and playback events"
+  ],
+  "publicApiSurface": [
+    "useVoiceVisualizer - Main React hook for audio recording control",
+    "VoiceVisualizer - React component for audio visualization",
+    "Controls - TypeScript interface for hook return values",
+    "useVoiceVisualizerParams - TypeScript interface for hook parameters",
+    "startRecording() - Start audio recording",
+    "stopRecording() - Stop audio recording",
+    "togglePauseResume() - Toggle pause/resume state",
+    "startAudioPlayback() - Start audio playback",
+    "stopAudioPlayback() - Stop audio playback",
+    "clearCanvas() - Clear visualization canvas",
+    "saveAudioFile() - Download recorded audio",
+    "setPreloadedAudioBlob() - Load external audio blob",
+    "recordedBlob - Recorded audio as Blob",
+    "bufferFromRecordedBlob - Audio buffer for processing",
+    "audioData - Real-time audio data for visualization",
+    "isRecordingInProgress - Recording state flag",
+    "isPausedRecording - Paused recording state flag",
+    "duration - Recorded audio duration",
+    "currentAudioTime - Current playback time",
+    "error - Error object if error occurred"
+  ]
+}
