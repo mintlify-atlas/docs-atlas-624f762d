@@ -1,0 +1,114 @@
+---
+title: Installation
+description: Install React Voice Visualizer in your project
+---
+
+## Package Installation
+
+Install React Voice Visualizer using your preferred package manager:
+
+<CodeGroup>
+
+```bash npm
+npm install react-voice-visualizer
+```
+
+```bash yarn
+yarn add react-voice-visualizer
+```
+
+```bash pnpm
+pnpm add react-voice-visualizer
+```
+
+</CodeGroup>
+
+## Peer Dependencies
+
+React Voice Visualizer requires React 18.2.0 or higher. Make sure your project has the following peer dependencies installed:
+
+```json package.json
+{
+  "dependencies": {
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0"
+  }
+}
+```
+
+If you don't have React installed yet, you can add it with:
+
+<CodeGroup>
+
+```bash npm
+npm install react react-dom
+```
+
+```bash yarn
+yarn add react react-dom
+```
+
+```bash pnpm
+pnpm add react react-dom
+```
+
+</CodeGroup>
+
+## Browser Compatibility
+
+React Voice Visualizer uses modern Web APIs to provide audio recording and visualization capabilities. Your browser must support:
+
+- **Web Audio API** - For audio processing and analysis
+- **MediaRecorder API** - For capturing audio recordings
+- **getUserMedia API** - For accessing the microphone
+- **HTML5 Canvas** - For rendering audio visualizations
+
+### Supported Browsers
+
+The library works in all modern browsers:
+
+- Chrome/Edge 49+
+- Firefox 25+
+- Safari 14.1+
+- Opera 36+
+
+<Note>
+  Mobile browsers are fully supported. The library automatically adjusts the visualization for smaller screens.
+</Note>
+
+### Browser Permissions
+
+Users will need to grant microphone permissions when starting their first recording. Make sure your application is served over HTTPS in production, as most browsers require a secure context for microphone access.
+
+<Warning>
+  **HTTPS Required**: The `getUserMedia` API requires HTTPS in production. Local development (localhost) works over HTTP.
+</Warning>
+
+## TypeScript Support
+
+React Voice Visualizer is written in TypeScript and includes built-in type definitions. No additional `@types` packages are needed.
+
+The library exports all necessary types for your TypeScript projects:
+
+```typescript
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+import type { Controls } from 'react-voice-visualizer';
+```
+
+### Available Types
+
+- `Controls` - Return type from the `useVoiceVisualizer` hook
+- `useVoiceVisualizerParams` - Parameters for the hook
+
+Your IDE will provide full IntelliSense support for all props and hook returns.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quick Start" icon="rocket" href="/quickstart">
+    Get started with a basic implementation
+  </Card>
+  <Card title="API Reference" icon="code" href="/api/use-voice-visualizer">
+    Explore all available options and methods
+  </Card>
+</CardGroup>

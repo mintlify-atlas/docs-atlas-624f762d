@@ -1,0 +1,479 @@
+---
+title: 'TypeScript Types'
+description: 'TypeScript interfaces and types reference'
+---
+
+This page documents all TypeScript interfaces and types exported by the React Voice Visualizer library.
+
+## Main Types
+
+### Controls
+
+The main interface returned by the `useVoiceVisualizer` hook. Contains all state values and control functions.
+
+```tsx
+interface Controls {
+  // Refs
+  audioRef: MutableRefObject<HTMLAudioElement | null>;
+  
+  // Recording State
+  isRecordingInProgress: boolean;
+  isPausedRecording: boolean;
+  recordingTime: number;
+  formattedRecordingTime: string;
+  isProcessingStartRecording: boolean;
+  
+  // Audio Data
+  audioData: Uint8Array;
+  recordedBlob: Blob | null;
+  audioSrc: string;
+  bufferFromRecordedBlob: AudioBuffer | null;
+  mediaRecorder: MediaRecorder | null;
+  
+  // Playback State
+  isPausedRecordedAudio: boolean;
+  currentAudioTime: number;
+  duration: number;
+  formattedDuration: string;
+  formattedRecordedAudioCurrentTime: string;
+  
+  // Availability & Processing
+  isAvailableRecordedAudio: boolean;
+  isProcessingRecordedAudio: boolean;
+  isProcessingOnResize: boolean;
+  isCleared: boolean;
+  isPreloadedBlob: boolean;
+  
+  // Error
+  error: Error | null;
+  
+  // Control Functions
+  startRecording: () => void;
+  togglePauseResume: () => void;
+  startAudioPlayback: () => void;
+  stopAudioPlayback: () => void;
+  stopRecording: () => void;
+  saveAudioFile: () => void;
+  clearCanvas: () => void;
+  setCurrentAudioTime: Dispatch<SetStateAction<number>>;
+  setPreloadedAudioBlob: (blob: Blob) => void;
+  
+  // Internal Functions
+  _setIsProcessingAudioOnComplete: Dispatch<SetStateAction<boolean>>;
+  _setIsProcessingOnResize: Dispatch<SetStateAction<boolean>>;
+}
+```
+
+#### Properties
+
+<Expandable title="Refs">
+  <ResponseField name="audioRef" type="MutableRefObject<HTMLAudioElement | null>">
+    Reference to the HTML audio element used for playback.
+  </ResponseField>
+</Expandable>
+
+<Expandable title="Recording State">
+  <ResponseField name="isRecordingInProgress" type="boolean">
+    Indicates whether audio recording is currently in progress.
+  </ResponseField>
+
+  <ResponseField name="isPausedRecording" type="boolean">
+    Indicates whether the recording is currently paused.
+  </ResponseField>
+
+  <ResponseField name="recordingTime" type="number">
+    The current recording time in milliseconds.
+  </ResponseField>
+
+  <ResponseField name="formattedRecordingTime" type="string">
+    The recording time formatted as a string (e.g., "00:05").
+  </ResponseField>
+
+  <ResponseField name="isProcessingStartRecording" type="boolean">
+    Indicates whether the recording is being initialized.
+  </ResponseField>
+</Expandable>
+
+<Expandable title="Audio Data">
+  <ResponseField name="audioData" type="Uint8Array">
+    Real-time frequency data from the microphone during recording.
+  </ResponseField>
+
+  <ResponseField name="recordedBlob" type="Blob | null">
+    The recorded audio as a Blob object.
+  </ResponseField>
+
+  <ResponseField name="audioSrc" type="string">
+    Object URL created from the recorded blob.
+  </ResponseField>
+
+  <ResponseField name="bufferFromRecordedBlob" type="AudioBuffer | null">
+    The decoded audio buffer from the recorded blob.
+  </ResponseField>
+
+  <ResponseField name="mediaRecorder" type="MediaRecorder | null">
+    The MediaRecorder instance used for recording.
+  </ResponseField>
+</Expandable>
+
+<Expandable title="Playback State">
+  <ResponseField name="isPausedRecordedAudio" type="boolean">
+    Indicates whether recorded audio playback is currently paused.
+  </ResponseField>
+
+  <ResponseField name="currentAudioTime" type="number">
+    The current playback position in seconds.
+  </ResponseField>
+
+  <ResponseField name="duration" type="number">
+    The total duration of the recorded audio in seconds.
+  </ResponseField>
+
+  <ResponseField name="formattedDuration" type="string">
+    The duration formatted as a string (e.g., "00:15").
+  </ResponseField>
+
+  <ResponseField name="formattedRecordedAudioCurrentTime" type="string">
+    The current playback time formatted as a string.
+  </ResponseField>
+</Expandable>
+
+<Expandable title="Availability & Processing">
+  <ResponseField name="isAvailableRecordedAudio" type="boolean">
+    Indicates whether recorded audio is available and ready.
+  </ResponseField>
+
+  <ResponseField name="isProcessingRecordedAudio" type="boolean">
+    Indicates whether the recorded audio is being processed.
+  </ResponseField>
+
+  <ResponseField name="isProcessingOnResize" type="boolean">
+    Indicates whether the visualization is being reprocessed due to resize.
+  </ResponseField>
+
+  <ResponseField name="isCleared" type="boolean">
+    Indicates whether the canvas has been cleared.
+  </ResponseField>
+
+  <ResponseField name="isPreloadedBlob" type="boolean">
+    Indicates whether the current audio was loaded from a preloaded blob.
+  </ResponseField>
+</Expandable>
+
+<Expandable title="Error">
+  <ResponseField name="error" type="Error | null">
+    Any error that occurred during recording or processing.
+  </ResponseField>
+</Expandable>
+
+<Expandable title="Control Functions">
+  <ResponseField name="startRecording" type="() => void">
+    Starts a new audio recording.
+  </ResponseField>
+
+  <ResponseField name="togglePauseResume" type="() => void">
+    Toggles between paused and resumed states.
+  </ResponseField>
+
+  <ResponseField name="startAudioPlayback" type="() => void">
+    Starts or resumes playback of the recorded audio.
+  </ResponseField>
+
+  <ResponseField name="stopAudioPlayback" type="() => void">
+    Pauses the recorded audio playback.
+  </ResponseField>
+
+  <ResponseField name="stopRecording" type="() => void">
+    Stops the current recording.
+  </ResponseField>
+
+  <ResponseField name="saveAudioFile" type="() => void">
+    Triggers a download of the recorded audio file.
+  </ResponseField>
+
+  <ResponseField name="clearCanvas" type="() => void">
+    Clears all state and resets the visualizer.
+  </ResponseField>
+
+  <ResponseField name="setCurrentAudioTime" type="Dispatch<SetStateAction<number>>">
+    Updates the current playback position.
+  </ResponseField>
+
+  <ResponseField name="setPreloadedAudioBlob" type="(blob: Blob) => void">
+    Loads a pre-existing audio blob.
+  </ResponseField>
+</Expandable>
+
+### useVoiceVisualizerParams
+
+Parameters accepted by the `useVoiceVisualizer` hook. All properties are optional.
+
+```tsx
+interface useVoiceVisualizerParams {
+  onStartRecording?: () => void;
+  onStopRecording?: () => void;
+  onPausedRecording?: () => void;
+  onResumedRecording?: () => void;
+  onClearCanvas?: () => void;
+  onEndAudioPlayback?: () => void;
+  onStartAudioPlayback?: () => void;
+  onPausedAudioPlayback?: () => void;
+  onResumedAudioPlayback?: () => void;
+  onErrorPlayingAudio?: (error: Error) => void;
+  shouldHandleBeforeUnload?: boolean;
+}
+```
+
+#### Properties
+
+<ResponseField name="onStartRecording" type="() => void">
+  Callback invoked when audio recording starts.
+</ResponseField>
+
+<ResponseField name="onStopRecording" type="() => void">
+  Callback invoked when audio recording stops.
+</ResponseField>
+
+<ResponseField name="onPausedRecording" type="() => void">
+  Callback invoked when audio recording is paused.
+</ResponseField>
+
+<ResponseField name="onResumedRecording" type="() => void">
+  Callback invoked when audio recording is resumed.
+</ResponseField>
+
+<ResponseField name="onClearCanvas" type="() => void">
+  Callback invoked when the canvas is cleared.
+</ResponseField>
+
+<ResponseField name="onEndAudioPlayback" type="() => void">
+  Callback invoked when recorded audio playback ends.
+</ResponseField>
+
+<ResponseField name="onStartAudioPlayback" type="() => void">
+  Callback invoked when recorded audio playback starts.
+</ResponseField>
+
+<ResponseField name="onPausedAudioPlayback" type="() => void">
+  Callback invoked when recorded audio playback is paused.
+</ResponseField>
+
+<ResponseField name="onResumedAudioPlayback" type="() => void">
+  Callback invoked when recorded audio playback is resumed.
+</ResponseField>
+
+<ResponseField name="onErrorPlayingAudio" type="(error: Error) => void">
+  Callback invoked when an error occurs during playback.
+</ResponseField>
+
+<ResponseField name="shouldHandleBeforeUnload" type="boolean">
+  Whether to handle the browser's beforeunload event. Defaults to true.
+</ResponseField>
+
+## Internal Types
+
+These types are used internally by the library and are exported for advanced use cases.
+
+### BarItem
+
+Represents a single bar in the waveform visualization.
+
+```tsx
+interface BarItem {
+  startY: number;
+  barHeight: number;
+}
+```
+
+<ResponseField name="startY" type="number">
+  The Y coordinate where the bar starts on the canvas.
+</ResponseField>
+
+<ResponseField name="barHeight" type="number">
+  The height of the bar in pixels.
+</ResponseField>
+
+### BarsData
+
+Data structure returned by the audio processing worker.
+
+```tsx
+interface BarsData {
+  max: number;
+}
+```
+
+<ResponseField name="max" type="number">
+  The maximum amplitude value for the bar.
+</ResponseField>
+
+### GetBarsDataParams
+
+Parameters passed to the Web Worker for processing audio buffer data.
+
+```tsx
+type GetBarsDataParams = {
+  bufferData: Float32Array;
+  height: number;
+  width: number;
+  barWidth: number;
+  gap: number;
+};
+```
+
+<ResponseField name="bufferData" type="Float32Array">
+  The raw audio buffer data from the AudioBuffer.
+</ResponseField>
+
+<ResponseField name="height" type="number">
+  The height of the canvas in pixels.
+</ResponseField>
+
+<ResponseField name="width" type="number">
+  The width of the canvas in pixels.
+</ResponseField>
+
+<ResponseField name="barWidth" type="number">
+  The width of each bar in pixels.
+</ResponseField>
+
+<ResponseField name="gap" type="number">
+  The gap between bars.
+</ResponseField>
+
+### DrawByLiveStreamParams
+
+Parameters for drawing the live recording waveform.
+
+```tsx
+interface DrawByLiveStreamParams {
+  audioData: Uint8Array;
+  unit: number;
+  index: MutableRefObject<number>;
+  index2: MutableRefObject<number>;
+  canvas: HTMLCanvasElement;
+  isRecordingInProgress: boolean;
+  isPausedRecording: boolean;
+  picks: Array<BarItem | null>;
+  backgroundColor: string;
+  barWidth: number;
+  mainBarColor: string;
+  secondaryBarColor: string;
+  rounded: number;
+  animateCurrentPick: boolean;
+  fullscreen: boolean;
+}
+```
+
+### DrawByBlob
+
+Parameters for drawing the recorded audio waveform.
+
+```tsx
+interface DrawByBlob {
+  barsData: BarsData[];
+  canvas: HTMLCanvasElement;
+  barWidth: number;
+  gap: number;
+  backgroundColor: string;
+  mainBarColor: string;
+  secondaryBarColor: string;
+  currentAudioTime?: number;
+  rounded: number;
+  duration: number;
+}
+```
+
+### UseWebWorkerParams
+
+Generic interface for the Web Worker hook.
+
+```tsx
+interface UseWebWorkerParams<T> {
+  fn: AnyFunction;
+  initialValue: T;
+  onMessageReceived?: () => void;
+}
+```
+
+<ResponseField name="fn" type="AnyFunction">
+  The function to run in the Web Worker.
+</ResponseField>
+
+<ResponseField name="initialValue" type="T">
+  The initial value for the result state.
+</ResponseField>
+
+<ResponseField name="onMessageReceived" type="() => void">
+  Callback invoked when the worker sends a message.
+</ResponseField>
+
+### AnyFunction
+
+Utility type for any function.
+
+```tsx
+type AnyFunction = (...args: any[]) => any;
+```
+
+## Usage Examples
+
+### Type-Safe Hook Usage
+
+```tsx
+import { useVoiceVisualizer, useVoiceVisualizerParams } from '@gideo-llc/react-voice-visualizer';
+
+const params: useVoiceVisualizerParams = {
+  onStartRecording: () => console.log('Started'),
+  onStopRecording: () => console.log('Stopped'),
+  shouldHandleBeforeUnload: true,
+};
+
+const controls = useVoiceVisualizer(params);
+```
+
+### Using Controls Type
+
+```tsx
+import { Controls } from '@gideo-llc/react-voice-visualizer';
+import { createContext } from 'react';
+
+const AudioContext = createContext<Controls | null>(null);
+
+function AudioProvider({ children }: { children: React.ReactNode }) {
+  const controls = useVoiceVisualizer();
+  
+  return (
+    <AudioContext.Provider value={controls}>
+      {children}
+    </AudioContext.Provider>
+  );
+}
+```
+
+### Custom Component with Controls
+
+```tsx
+import { Controls } from '@gideo-llc/react-voice-visualizer';
+
+interface CustomPlayerProps {
+  audioControls: Controls;
+  className?: string;
+}
+
+function CustomPlayer({ audioControls, className }: CustomPlayerProps) {
+  return (
+    <div className={className}>
+      <button onClick={audioControls.startRecording}>
+        Start
+      </button>
+      <button onClick={audioControls.stopRecording}>
+        Stop
+      </button>
+      {audioControls.error && (
+        <p>Error: {audioControls.error.message}</p>
+      )}
+    </div>
+  );
+}
+```

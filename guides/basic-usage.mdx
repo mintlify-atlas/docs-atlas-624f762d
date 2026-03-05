@@ -1,0 +1,266 @@
+---
+title: 'Basic Usage'
+description: 'Learn the fundamentals of using React Voice Visualizer'
+icon: 'play'
+---
+
+## Getting Started
+
+The React Voice Visualizer library consists of two main parts:
+- **`useVoiceVisualizer` hook**: Manages recording state and controls
+- **`VoiceVisualizer` component**: Renders the visualization UI
+
+## Basic Setup
+
+Here's a minimal example to get started:
+
+```tsx
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function App() {
+  const recorderControls = useVoiceVisualizer();
+
+  return <VoiceVisualizer controls={recorderControls} />;
+}
+```
+
+This gives you a fully functional audio recorder with visualization out of the box.
+
+## Recording Lifecycle
+
+The recording process follows a simple lifecycle:
+
+<Steps>
+  <Step title="Start Recording">
+    Click the microphone button or call `startRecording()` to begin capturing audio.
+    
+    ```tsx
+    const { startRecording, isRecordingInProgress } = useVoiceVisualizer();
+    ```
+    
+    The browser will request microphone permissions on first use.
+  </Step>
+  
+  <Step title="Pause/Resume">
+    Toggle between pause and resume during recording:
+    
+    ```tsx
+    const { togglePauseResume, isPausedRecording } = useVoiceVisualizer();
+    ```
+  </Step>
+  
+  <Step title="Stop Recording">
+    End the recording and process the audio:
+    
+    ```tsx
+    const { stopRecording } = useVoiceVisualizer();
+    ```
+    
+    The library automatically processes the recorded audio into a `Blob`.
+  </Step>
+  
+  <Step title="Playback">
+    Play back the recorded audio:
+    
+    ```tsx
+    const { 
+      startAudioPlayback, 
+      stopAudioPlayback,
+      isPausedRecordedAudio 
+    } = useVoiceVisualizer();
+    ```
+  </Step>
+</Steps>
+
+## Getting the Recorded Audio
+
+Access the recorded audio blob once recording is complete:
+
+```tsx
+import { useEffect } from 'react';
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function App() {
+  const recorderControls = useVoiceVisualizer();
+  const { recordedBlob, isAvailableRecordedAudio } = recorderControls;
+
+  useEffect(() => {
+    if (!recordedBlob) return;
+
+    console.log('Recorded audio blob:', recordedBlob);
+    console.log('Blob size:', recordedBlob.size);
+    console.log('MIME type:', recordedBlob.type);
+    
+    // Send to server, save to IndexedDB, etc.
+    uploadAudio(recordedBlob);
+  }, [recordedBlob]);
+
+  return <VoiceVisualizer controls={recorderControls} />;
+}
+```
+
+<Note>
+  The `recordedBlob` is available after calling `stopRecording()`. Use `isAvailableRecordedAudio` to check if the audio is ready (not being processed).
+</Note>
+
+## Key State Values
+
+The hook provides several state values to track recording status:
+
+<ParamField path="isRecordingInProgress" type="boolean">
+  Indicates if recording is currently active
+</ParamField>
+
+<ParamField path="isPausedRecording" type="boolean">
+  Indicates if recording is paused
+</ParamField>
+
+<ParamField path="isCleared" type="boolean">
+  Indicates if the canvas has been cleared (no recording exists)
+</ParamField>
+
+<ParamField path="isAvailableRecordedAudio" type="boolean">
+  Indicates if recorded audio is available and not being processed
+</ParamField>
+
+<ParamField path="recordedBlob" type="Blob | null">
+  The recorded audio data in Blob format
+</ParamField>
+
+<ParamField path="audioSrc" type="string">
+  Object URL for the recorded audio, ready for playback
+</ParamField>
+
+## Time Tracking
+
+Get formatted time values for display:
+
+```tsx
+const {
+  formattedRecordingTime,           // "09:51" - current recording time
+  formattedDuration,                 // "09:51m" - total duration
+  formattedRecordedAudioCurrentTime, // "09:51:1" - playback position
+  recordingTime,                     // Raw time in milliseconds
+  duration,                          // Duration in seconds
+  currentAudioTime                   // Playback time in seconds
+} = useVoiceVisualizer();
+```
+
+## Control Functions
+
+All recording and playback operations:
+
+<CardGroup cols={2}>
+  <Card title="startRecording()" icon="microphone">
+    Begins audio recording. Requests microphone permission if needed.
+  </Card>
+  
+  <Card title="stopRecording()" icon="stop">
+    Ends recording and processes the audio blob.
+  </Card>
+  
+  <Card title="togglePauseResume()" icon="pause">
+    Pauses/resumes recording or playback based on current state.
+  </Card>
+  
+  <Card title="clearCanvas()" icon="trash">
+    Clears the visualization and resets all state.
+  </Card>
+  
+  <Card title="startAudioPlayback()" icon="play">
+    Starts or resumes playback of recorded audio.
+  </Card>
+  
+  <Card title="stopAudioPlayback()" icon="pause">
+    Pauses playback of recorded audio.
+  </Card>
+  
+  <Card title="saveAudioFile()" icon="download">
+    Downloads the recorded audio as a WebM file.
+  </Card>
+  
+  <Card title="setCurrentAudioTime()" icon="clock">
+    Sets the playback position (in seconds).
+  </Card>
+</CardGroup>
+
+## Audio Buffer Access
+
+For advanced use cases, access the decoded audio buffer:
+
+```tsx
+const { bufferFromRecordedBlob } = useVoiceVisualizer();
+
+if (bufferFromRecordedBlob) {
+  const channelData = bufferFromRecordedBlob.getChannelData(0);
+  const sampleRate = bufferFromRecordedBlob.sampleRate;
+  const duration = bufferFromRecordedBlob.duration;
+  
+  // Process raw audio data
+  processAudioData(channelData);
+}
+```
+
+## Complete Example
+
+```tsx
+import { useEffect } from 'react';
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function AudioRecorder() {
+  const recorderControls = useVoiceVisualizer({
+    onStartRecording: () => console.log('Recording started'),
+    onStopRecording: () => console.log('Recording stopped'),
+    onPausedRecording: () => console.log('Recording paused'),
+    onResumedRecording: () => console.log('Recording resumed'),
+    onClearCanvas: () => console.log('Canvas cleared'),
+  });
+
+  const { 
+    recordedBlob, 
+    isRecordingInProgress,
+    formattedRecordingTime,
+    formattedDuration
+  } = recorderControls;
+
+  useEffect(() => {
+    if (recordedBlob) {
+      console.log('New recording available:', recordedBlob);
+    }
+  }, [recordedBlob]);
+
+  return (
+    <div>
+      <VoiceVisualizer controls={recorderControls} />
+      
+      {isRecordingInProgress && (
+        <p>Recording: {formattedRecordingTime}</p>
+      )}
+      
+      {formattedDuration && (
+        <p>Duration: {formattedDuration}</p>
+      )}
+    </div>
+  );
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Customization" icon="palette" href="/guides/customization">
+    Customize colors, dimensions, and visual appearance
+  </Card>
+  
+  <Card title="Custom UI" icon="paintbrush" href="/guides/custom-ui">
+    Build your own UI with custom controls
+  </Card>
+  
+  <Card title="Error Handling" icon="triangle-exclamation" href="/guides/error-handling">
+    Handle errors and edge cases properly
+  </Card>
+  
+  <Card title="Preloaded Audio" icon="file-audio" href="/guides/preloaded-audio">
+    Load external audio files for visualization
+  </Card>
+</CardGroup>

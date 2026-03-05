@@ -1,0 +1,518 @@
+---
+title: 'Preloaded Audio'
+description: 'Load and visualize external audio files'
+icon: 'file-audio'
+---
+
+## Overview
+
+The `setPreloadedAudioBlob` function allows you to load external audio files into the visualizer. This is useful for:
+
+- Visualizing audio files from user uploads
+- Loading audio from your server
+- Playing back previously recorded audio
+- Editing existing audio files
+
+This feature was introduced in version 2.x.x.
+
+## Basic Usage
+
+Use the `setPreloadedAudioBlob` function to load an audio blob:
+
+```tsx
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function AudioPlayer() {
+  const recorderControls = useVoiceVisualizer();
+  const { setPreloadedAudioBlob } = recorderControls;
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setPreloadedAudioBlob(file);
+    }
+  };
+
+  return (
+    <div>
+      <input 
+        type="file" 
+        accept="audio/*" 
+        onChange={handleFileUpload}
+      />
+      <VoiceVisualizer controls={recorderControls} />
+    </div>
+  );
+}
+```
+
+## What Happens When Loading
+
+When you call `setPreloadedAudioBlob(blob)`, the library:
+
+1. Clears any existing recording
+2. Sets `isPreloadedBlob` to `true`
+3. Sets `isCleared` to `false`
+4. Processes the audio blob
+5. Creates an audio buffer for visualization
+6. Makes the audio ready for playback
+
+<Note>
+  The canvas is automatically cleared when loading a new audio blob.
+</Note>
+
+## Loading from File Input
+
+The most common use case is loading files from user input:
+
+```tsx
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function FileUploadRecorder() {
+  const recorderControls = useVoiceVisualizer();
+  const { setPreloadedAudioBlob, isProcessingRecordedAudio } = recorderControls;
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('audio/')) {
+      setPreloadedAudioBlob(file);
+    } else {
+      alert('Please select an audio file');
+    }
+  };
+
+  return (
+    <div>
+      <div className="upload-section">
+        <label htmlFor="audio-upload" className="upload-button">
+          Upload Audio File
+        </label>
+        <input
+          id="audio-upload"
+          type="file"
+          accept="audio/*"
+          onChange={handleFileChange}
+          style={{ display: 'none' }}
+        />
+      </div>
+      
+      {isProcessingRecordedAudio && (
+        <p>Loading audio file...</p>
+      )}
+      
+      <VoiceVisualizer controls={recorderControls} />
+    </div>
+  );
+}
+```
+
+## Loading from URL
+
+Load audio from a remote URL:
+
+```tsx
+import { useEffect } from 'react';
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function URLAudioPlayer({ audioUrl }: { audioUrl: string }) {
+  const recorderControls = useVoiceVisualizer();
+  const { setPreloadedAudioBlob } = recorderControls;
+
+  useEffect(() => {
+    async function loadAudio() {
+      try {
+        const response = await fetch(audioUrl);
+        const blob = await response.blob();
+        setPreloadedAudioBlob(blob);
+      } catch (error) {
+        console.error('Failed to load audio:', error);
+      }
+    }
+
+    if (audioUrl) {
+      loadAudio();
+    }
+  }, [audioUrl, setPreloadedAudioBlob]);
+
+  return <VoiceVisualizer controls={recorderControls} />;
+}
+```
+
+## Loading from IndexedDB
+
+Load previously saved recordings from IndexedDB:
+
+```tsx
+import { useEffect } from 'react';
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function SavedRecording({ recordingId }: { recordingId: string }) {
+  const recorderControls = useVoiceVisualizer();
+  const { setPreloadedAudioBlob } = recorderControls;
+
+  useEffect(() => {
+    async function loadFromDB() {
+      const db = await openDatabase();
+      const blob = await getRecording(db, recordingId);
+      
+      if (blob) {
+        setPreloadedAudioBlob(blob);
+      }
+    }
+
+    loadFromDB();
+  }, [recordingId, setPreloadedAudioBlob]);
+
+  return <VoiceVisualizer controls={recorderControls} />;
+}
+
+// Helper functions
+async function openDatabase(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('AudioRecordings', 1);
+    
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+    
+    request.onupgradeneeded = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result;
+      if (!db.objectStoreNames.contains('recordings')) {
+        db.createObjectStore('recordings', { keyPath: 'id' });
+      }
+    };
+  });
+}
+
+async function getRecording(
+  db: IDBDatabase, 
+  id: string
+): Promise<Blob | null> {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['recordings'], 'readonly');
+    const store = transaction.objectStore('recordings');
+    const request = store.get(id);
+    
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      resolve(request.result?.blob || null);
+    };
+  });
+}
+```
+
+## Checking for Preloaded Audio
+
+Use the `isPreloadedBlob` state to check if audio was loaded externally:
+
+```tsx
+function AudioVisualizer() {
+  const recorderControls = useVoiceVisualizer();
+  const { isPreloadedBlob, isCleared } = recorderControls;
+
+  return (
+    <div>
+      <VoiceVisualizer controls={recorderControls} />
+      
+      {isPreloadedBlob && (
+        <p>Viewing external audio file</p>
+      )}
+      
+      {!isPreloadedBlob && !isCleared && (
+        <p>Viewing recorded audio</p>
+      )}
+    </div>
+  );
+}
+```
+
+## Combined Recording and Upload
+
+Allow users to either record or upload audio:
+
+```tsx
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function FlexibleRecorder() {
+  const recorderControls = useVoiceVisualizer();
+  const { 
+    setPreloadedAudioBlob, 
+    isCleared,
+    isPreloadedBlob,
+    clearCanvas 
+  } = recorderControls;
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setPreloadedAudioBlob(file);
+    }
+  };
+
+  return (
+    <div>
+      {isCleared && (
+        <div className="options">
+          <button onClick={() => recorderControls.startRecording()}>
+            Record New Audio
+          </button>
+          
+          <span>or</span>
+          
+          <label className="upload-btn">
+            Upload Audio File
+            <input
+              type="file"
+              accept="audio/*"
+              onChange={handleFileUpload}
+              style={{ display: 'none' }}
+            />
+          </label>
+        </div>
+      )}
+      
+      <VoiceVisualizer 
+        controls={recorderControls}
+        isDownloadAudioButtonShown={true}
+      />
+      
+      {isPreloadedBlob && (
+        <p className="info">Loaded from file</p>
+      )}
+      
+      {!isCleared && (
+        <button onClick={clearCanvas}>Start Over</button>
+      )}
+    </div>
+  );
+}
+```
+
+## Supported Audio Formats
+
+The library uses the Web Audio API, which supports:
+
+- **WebM** (recommended for recordings)
+- **MP3**
+- **WAV**
+- **OGG**
+- **AAC/M4A**
+- **FLAC**
+
+Browser support may vary. The most widely supported format is MP3.
+
+<Warning>
+  If the audio format is not supported by the browser's Web Audio API, the `error` state will be set with an error message.
+</Warning>
+
+## Handling Load Errors
+
+Handle errors when loading external audio:
+
+```tsx
+import { useEffect } from 'react';
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function SafeAudioLoader({ audioUrl }: { audioUrl: string }) {
+  const recorderControls = useVoiceVisualizer();
+  const { setPreloadedAudioBlob, error } = recorderControls;
+
+  useEffect(() => {
+    async function loadAudio() {
+      try {
+        const response = await fetch(audioUrl);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const blob = await response.blob();
+        
+        if (blob.size === 0) {
+          throw new Error('Audio file is empty');
+        }
+        
+        setPreloadedAudioBlob(blob);
+      } catch (err) {
+        console.error('Failed to load audio:', err);
+      }
+    }
+
+    if (audioUrl) {
+      loadAudio();
+    }
+  }, [audioUrl, setPreloadedAudioBlob]);
+
+  return (
+    <div>
+      {error && (
+        <div className="error">
+          Failed to load audio: {error.message}
+        </div>
+      )}
+      <VoiceVisualizer controls={recorderControls} />
+    </div>
+  );
+}
+```
+
+## Drag and Drop Upload
+
+Implement drag-and-drop file upload:
+
+```tsx
+import { useState } from 'react';
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function DragDropRecorder() {
+  const recorderControls = useVoiceVisualizer();
+  const { setPreloadedAudioBlob } = recorderControls;
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('audio/')) {
+      setPreloadedAudioBlob(file);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  return (
+    <div
+      className={`drop-zone ${isDragging ? 'dragging' : ''}`}
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+    >
+      <VoiceVisualizer controls={recorderControls} />
+      
+      {isDragging && (
+        <div className="drop-overlay">
+          Drop audio file here
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+## Processing State
+
+Show loading state while audio is being processed:
+
+```tsx
+function LoadingAudioPlayer() {
+  const recorderControls = useVoiceVisualizer();
+  const { 
+    setPreloadedAudioBlob, 
+    isProcessingRecordedAudio,
+    isAvailableRecordedAudio 
+  } = recorderControls;
+
+  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setPreloadedAudioBlob(file);
+    }
+  };
+
+  return (
+    <div>
+      <input type="file" accept="audio/*" onChange={handleUpload} />
+      
+      {isProcessingRecordedAudio && (
+        <div className="loading">
+          <span className="spinner" />
+          Processing audio file...
+        </div>
+      )}
+      
+      <VoiceVisualizer 
+        controls={recorderControls}
+        audioProcessingElem={<div>Decoding audio...</div>}
+      />
+      
+      {isAvailableRecordedAudio && (
+        <p className="success">Audio loaded successfully!</p>
+      )}
+    </div>
+  );
+}
+```
+
+## Converting Audio Formats
+
+If you need to convert audio formats before loading, use FFmpeg or a similar library:
+
+```tsx
+import { useVoiceVisualizer } from 'react-voice-visualizer';
+import { FFmpeg } from '@ffmpeg/ffmpeg';
+
+function ConvertingAudioLoader() {
+  const { setPreloadedAudioBlob } = useVoiceVisualizer();
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Convert to WebM if needed
+    if (!file.type.includes('webm')) {
+      const ffmpeg = new FFmpeg();
+      await ffmpeg.load();
+      
+      const data = await file.arrayBuffer();
+      await ffmpeg.writeFile('input', new Uint8Array(data));
+      
+      await ffmpeg.exec(['-i', 'input', 'output.webm']);
+      const output = await ffmpeg.readFile('output.webm');
+      
+      const webmBlob = new Blob([output], { type: 'audio/webm' });
+      setPreloadedAudioBlob(webmBlob);
+    } else {
+      setPreloadedAudioBlob(file);
+    }
+  };
+
+  // ... render UI
+}
+```
+
+## Key Points
+
+<Note>
+  `setPreloadedAudioBlob` accepts any `Blob` object, including `File` objects from file inputs.
+</Note>
+
+<Note>
+  The audio blob is processed asynchronously. Use `isProcessingRecordedAudio` to track processing state.
+</Note>
+
+<Warning>
+  Calling `setPreloadedAudioBlob` will clear any existing recording. The canvas is automatically cleared.
+</Warning>
+
+<Tip>
+  For large audio files, consider showing a progress indicator during the processing phase.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Error Handling" icon="triangle-exclamation" href="/guides/error-handling">
+    Learn how to handle audio loading errors
+  </Card>
+  
+  <Card title="API Reference" icon="code" href="/api/use-voice-visualizer">
+    View complete API documentation
+  </Card>
+</CardGroup>

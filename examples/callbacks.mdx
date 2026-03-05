@@ -1,0 +1,591 @@
+---
+title: 'Lifecycle Callbacks'
+description: 'Handle recording and playback events with callbacks'
+icon: 'arrows-rotate'
+---
+
+# Lifecycle Callbacks Example
+
+This example demonstrates how to use lifecycle callbacks to respond to recording and playback events.
+
+## Complete Code
+
+<CodeGroup>
+
+```jsx CallbacksExample.jsx
+import React, { useState } from 'react';
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function CallbacksExample() {
+  const [events, setEvents] = useState([]);
+
+  // Add event to log
+  const logEvent = (eventName) => {
+    const timestamp = new Date().toLocaleTimeString();
+    setEvents(prev => [...prev, { name: eventName, time: timestamp }]);
+  };
+
+  // Initialize hook with all callback handlers
+  const recorderControls = useVoiceVisualizer({
+    // Recording callbacks
+    onStartRecording: () => {
+      logEvent('Recording started');
+      console.log('Recording has started');
+    },
+    onStopRecording: () => {
+      logEvent('Recording stopped');
+      console.log('Recording has stopped');
+    },
+    onPausedRecording: () => {
+      logEvent('Recording paused');
+      console.log('Recording paused');
+    },
+    onResumedRecording: () => {
+      logEvent('Recording resumed');
+      console.log('Recording resumed');
+    },
+    
+    // Playback callbacks
+    onStartAudioPlayback: () => {
+      logEvent('Playback started');
+      console.log('Audio playback started');
+    },
+    onPausedAudioPlayback: () => {
+      logEvent('Playback paused');
+      console.log('Audio playback paused');
+    },
+    onResumedAudioPlayback: () => {
+      logEvent('Playback resumed');
+      console.log('Audio playback resumed');
+    },
+    onEndAudioPlayback: () => {
+      logEvent('Playback ended');
+      console.log('Audio playback ended');
+    },
+    
+    // Error callback
+    onErrorPlayingAudio: (error) => {
+      logEvent(`Error: ${error.message}`);
+      console.error('Error playing audio:', error);
+    },
+    
+    // Canvas callback
+    onClearCanvas: () => {
+      logEvent('Canvas cleared');
+      console.log('Canvas has been cleared');
+    },
+  });
+
+  return (
+    <div style={{ padding: '20px' }}>
+      <h1>Lifecycle Callbacks Demo</h1>
+      
+      <VoiceVisualizer 
+        controls={recorderControls}
+        height={200}
+        width="100%"
+        isControlPanelShown={true}
+      />
+      
+      {/* Event Log */}
+      <div style={{
+        marginTop: '30px',
+        padding: '20px',
+        backgroundColor: '#f5f5f5',
+        borderRadius: '8px',
+        maxHeight: '300px',
+        overflowY: 'auto'
+      }}>
+        <h3>Event Log</h3>
+        {events.length === 0 ? (
+          <p>No events yet. Start recording to see callbacks in action!</p>
+        ) : (
+          <ul style={{ listStyle: 'none', padding: 0 }}>
+            {events.map((event, index) => (
+              <li key={index} style={{
+                padding: '8px',
+                marginBottom: '5px',
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                borderLeft: '3px solid #3b82f6'
+              }}>
+                <strong>{event.time}</strong>: {event.name}
+              </li>
+            ))}
+          </ul>
+        )}
+        {events.length > 0 && (
+          <button 
+            onClick={() => setEvents([])}
+            style={{
+              marginTop: '10px',
+              padding: '8px 16px',
+              backgroundColor: '#ef4444',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Clear Log
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default CallbacksExample;
+```
+
+```tsx CallbacksExample.tsx
+import React, { useState } from 'react';
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+interface Event {
+  name: string;
+  time: string;
+}
+
+function CallbacksExample() {
+  const [events, setEvents] = useState<Event[]>([]);
+
+  // Add event to log
+  const logEvent = (eventName: string) => {
+    const timestamp = new Date().toLocaleTimeString();
+    setEvents(prev => [...prev, { name: eventName, time: timestamp }]);
+  };
+
+  // Initialize hook with all callback handlers
+  const recorderControls = useVoiceVisualizer({
+    // Recording callbacks
+    onStartRecording: () => {
+      logEvent('Recording started');
+      console.log('Recording has started');
+    },
+    onStopRecording: () => {
+      logEvent('Recording stopped');
+      console.log('Recording has stopped');
+    },
+    onPausedRecording: () => {
+      logEvent('Recording paused');
+      console.log('Recording paused');
+    },
+    onResumedRecording: () => {
+      logEvent('Recording resumed');
+      console.log('Recording resumed');
+    },
+    
+    // Playback callbacks
+    onStartAudioPlayback: () => {
+      logEvent('Playback started');
+      console.log('Audio playback started');
+    },
+    onPausedAudioPlayback: () => {
+      logEvent('Playback paused');
+      console.log('Audio playback paused');
+    },
+    onResumedAudioPlayback: () => {
+      logEvent('Playback resumed');
+      console.log('Audio playback resumed');
+    },
+    onEndAudioPlayback: () => {
+      logEvent('Playback ended');
+      console.log('Audio playback ended');
+    },
+    
+    // Error callback
+    onErrorPlayingAudio: (error: Error) => {
+      logEvent(`Error: ${error.message}`);
+      console.error('Error playing audio:', error);
+    },
+    
+    // Canvas callback
+    onClearCanvas: () => {
+      logEvent('Canvas cleared');
+      console.log('Canvas has been cleared');
+    },
+  });
+
+  return (
+    <div style={{ padding: '20px' }}>
+      <h1>Lifecycle Callbacks Demo</h1>
+      
+      <VoiceVisualizer 
+        controls={recorderControls}
+        height={200}
+        width="100%"
+        isControlPanelShown={true}
+      />
+      
+      {/* Event Log */}
+      <div style={{
+        marginTop: '30px',
+        padding: '20px',
+        backgroundColor: '#f5f5f5',
+        borderRadius: '8px',
+        maxHeight: '300px',
+        overflowY: 'auto'
+      }}>
+        <h3>Event Log</h3>
+        {events.length === 0 ? (
+          <p>No events yet. Start recording to see callbacks in action!</p>
+        ) : (
+          <ul style={{ listStyle: 'none', padding: 0 }}>
+            {events.map((event, index) => (
+              <li key={index} style={{
+                padding: '8px',
+                marginBottom: '5px',
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                borderLeft: '3px solid #3b82f6'
+              }}>
+                <strong>{event.time}</strong>: {event.name}
+              </li>
+            ))}
+          </ul>
+        )}
+        {events.length > 0 && (
+          <button 
+            onClick={() => setEvents([])}
+            style={{
+              marginTop: '10px',
+              padding: '8px 16px',
+              backgroundColor: '#ef4444',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Clear Log
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default CallbacksExample;
+```
+
+</CodeGroup>
+
+## Available Callbacks
+
+The `useVoiceVisualizer` hook accepts the following callback functions:
+
+### Recording Callbacks
+
+<ParamField path="onStartRecording" type="() => void">
+  Called when recording starts (after microphone permission is granted).
+</ParamField>
+
+<ParamField path="onStopRecording" type="() => void">
+  Called when recording stops and audio processing begins.
+</ParamField>
+
+<ParamField path="onPausedRecording" type="() => void">
+  Called when recording is paused.
+</ParamField>
+
+<ParamField path="onResumedRecording" type="() => void">
+  Called when recording is resumed after being paused.
+</ParamField>
+
+### Playback Callbacks
+
+<ParamField path="onStartAudioPlayback" type="() => void">
+  Called when audio playback starts from the beginning (currentAudioTime === 0).
+</ParamField>
+
+<ParamField path="onPausedAudioPlayback" type="() => void">
+  Called when audio playback is paused.
+</ParamField>
+
+<ParamField path="onResumedAudioPlayback" type="() => void">
+  Called when audio playback is resumed (currentAudioTime !== 0).
+</ParamField>
+
+<ParamField path="onEndAudioPlayback" type="() => void">
+  Called when audio playback reaches the end.
+</ParamField>
+
+### Other Callbacks
+
+<ParamField path="onErrorPlayingAudio" type="(error: Error) => void">
+  Called when an error occurs during audio playback.
+</ParamField>
+
+<ParamField path="onClearCanvas" type="() => void">
+  Called when the canvas is cleared.
+</ParamField>
+
+## Practical Use Cases
+
+### Analytics Tracking
+
+Track user interactions for analytics:
+
+```jsx
+const recorderControls = useVoiceVisualizer({
+  onStartRecording: () => {
+    // Track recording start
+    analytics.track('recording_started');
+  },
+  onStopRecording: () => {
+    // Track recording completion
+    analytics.track('recording_completed', {
+      duration: recorderControls.recordingTime
+    });
+  },
+  onEndAudioPlayback: () => {
+    // Track full playback
+    analytics.track('audio_played_complete');
+  }
+});
+```
+
+### State Management Integration
+
+Integrate with Redux or other state management:
+
+```jsx
+import { useDispatch } from 'react-redux';
+import { setRecordingStatus, saveAudioBlob } from './audioSlice';
+
+function RecorderWithRedux() {
+  const dispatch = useDispatch();
+  
+  const recorderControls = useVoiceVisualizer({
+    onStartRecording: () => {
+      dispatch(setRecordingStatus('recording'));
+    },
+    onStopRecording: () => {
+      dispatch(setRecordingStatus('processing'));
+    },
+    onClearCanvas: () => {
+      dispatch(setRecordingStatus('idle'));
+    }
+  });
+  
+  // Save blob to Redux when available
+  React.useEffect(() => {
+    if (recorderControls.recordedBlob) {
+      dispatch(saveAudioBlob(recorderControls.recordedBlob));
+    }
+  }, [recorderControls.recordedBlob, dispatch]);
+  
+  return <VoiceVisualizer controls={recorderControls} />;
+}
+```
+
+### Auto-save on Stop
+
+Automatically save recordings when they stop:
+
+```jsx
+const recorderControls = useVoiceVisualizer({
+  onStopRecording: async () => {
+    console.log('Recording stopped, waiting for blob...');
+  }
+});
+
+// Monitor recordedBlob and save when available
+React.useEffect(() => {
+  if (recorderControls.recordedBlob && 
+      recorderControls.isAvailableRecordedAudio) {
+    saveToServer(recorderControls.recordedBlob);
+  }
+}, [recorderControls.recordedBlob, recorderControls.isAvailableRecordedAudio]);
+
+const saveToServer = async (blob) => {
+  const formData = new FormData();
+  formData.append('audio', blob, 'recording.webm');
+  
+  try {
+    await fetch('/api/save-audio', {
+      method: 'POST',
+      body: formData
+    });
+    console.log('Audio saved successfully');
+  } catch (error) {
+    console.error('Failed to save audio:', error);
+  }
+};
+```
+
+### UI Notifications
+
+Show toast notifications for events:
+
+```jsx
+import { toast } from 'react-toastify';
+
+const recorderControls = useVoiceVisualizer({
+  onStartRecording: () => {
+    toast.info('Recording started');
+  },
+  onStopRecording: () => {
+    toast.success('Recording saved');
+  },
+  onErrorPlayingAudio: (error) => {
+    toast.error(`Playback error: ${error.message}`);
+  }
+});
+```
+
+### Recording Timer Display
+
+Create a custom recording timer:
+
+```jsx
+function RecorderWithTimer() {
+  const [isRecording, setIsRecording] = useState(false);
+  const [startTime, setStartTime] = useState(null);
+  
+  const recorderControls = useVoiceVisualizer({
+    onStartRecording: () => {
+      setIsRecording(true);
+      setStartTime(Date.now());
+    },
+    onStopRecording: () => {
+      setIsRecording(false);
+      const duration = (Date.now() - startTime) / 1000;
+      console.log(`Recording duration: ${duration}s`);
+    },
+    onPausedRecording: () => {
+      setIsRecording(false);
+    },
+    onResumedRecording: () => {
+      setIsRecording(true);
+    }
+  });
+  
+  return (
+    <div>
+      {isRecording && (
+        <div style={{ color: 'red', fontWeight: 'bold' }}>
+          🔴 Recording in progress...
+        </div>
+      )}
+      <VoiceVisualizer controls={recorderControls} />
+    </div>
+  );
+}
+```
+
+## Callback Execution Order
+
+### Recording Flow
+
+1. User clicks record button
+2. `onStartRecording()` is called
+3. Recording in progress...
+4. User clicks stop button
+5. `onStopRecording()` is called
+6. Audio processing begins
+7. `recordedBlob` becomes available
+
+### Playback Flow
+
+1. User clicks play button (first time)
+2. `onStartAudioPlayback()` is called
+3. Audio plays...
+4. User clicks pause
+5. `onPausedAudioPlayback()` is called
+6. User clicks play again
+7. `onResumedAudioPlayback()` is called
+8. Audio reaches end
+9. `onEndAudioPlayback()` is called
+
+<Note>
+- `onStartAudioPlayback` is only called when starting from the beginning (currentAudioTime === 0)
+- `onResumedAudioPlayback` is called when resuming from a paused state (currentAudioTime !== 0)
+</Note>
+
+## Error Handling Example
+
+```jsx
+const recorderControls = useVoiceVisualizer({
+  onErrorPlayingAudio: (error) => {
+    console.error('Playback error:', error);
+    
+    // Handle different error types
+    if (error.message.includes('NotAllowedError')) {
+      alert('Microphone access denied. Please grant permission.');
+    } else if (error.message.includes('NotFoundError')) {
+      alert('No microphone found. Please connect a microphone.');
+    } else {
+      alert('An error occurred during playback.');
+    }
+  }
+});
+
+// Also monitor the error property
+if (recorderControls.error) {
+  console.error('Recorder error:', recorderControls.error);
+}
+```
+
+## Combining with Other Features
+
+```jsx
+function AdvancedRecorder() {
+  const [recordings, setRecordings] = useState([]);
+  
+  const recorderControls = useVoiceVisualizer({
+    onStopRecording: () => {
+      console.log('Recording complete, processing...');
+    }
+  });
+  
+  // Save recording when blob is available
+  React.useEffect(() => {
+    if (recorderControls.recordedBlob && 
+        recorderControls.isAvailableRecordedAudio) {
+      const newRecording = {
+        id: Date.now(),
+        blob: recorderControls.recordedBlob,
+        duration: recorderControls.duration,
+        timestamp: new Date()
+      };
+      setRecordings(prev => [...prev, newRecording]);
+    }
+  }, [recorderControls.recordedBlob, recorderControls.isAvailableRecordedAudio]);
+  
+  return (
+    <div>
+      <VoiceVisualizer controls={recorderControls} />
+      
+      <h3>Previous Recordings</h3>
+      <ul>
+        {recordings.map(recording => (
+          <li key={recording.id}>
+            {recording.timestamp.toLocaleString()} - 
+            {recording.duration.toFixed(2)}s
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+<Tip>
+Callbacks are perfect for integrating the voice visualizer with your application's state management, analytics, and backend services.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Basic Recorder" icon="microphone" href="/examples/basic-recorder">
+    Start with a simple recorder example
+  </Card>
+  <Card title="File Upload" icon="file-arrow-up" href="/examples/file-upload">
+    Use callbacks with preloaded audio
+  </Card>
+  <Card title="Hook API" icon="book" href="/api/use-voice-visualizer">
+    Full hook documentation
+  </Card>
+</CardGroup>

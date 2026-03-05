@@ -1,0 +1,322 @@
+---
+title: 'VoiceVisualizer'
+description: 'Complete API reference for the VoiceVisualizer component'
+---
+
+The `VoiceVisualizer` component provides a complete, customizable UI for audio recording and playback with real-time waveform visualization.
+
+## Usage
+
+```tsx
+import { useVoiceVisualizer, VoiceVisualizer } from '@gideo-llc/react-voice-visualizer';
+
+function App() {
+  const controls = useVoiceVisualizer();
+
+  return (
+    <VoiceVisualizer 
+      controls={controls}
+      height={200}
+      backgroundColor="#1e1e1e"
+      mainBarColor="#00ff00"
+    />
+  );
+}
+```
+
+## Props
+
+### Required Props
+
+<ParamField path="controls" type="Controls" required>
+  The controls object returned from the `useVoiceVisualizer` hook. Contains all state and functions needed to manage recording and playback.
+</ParamField>
+
+### Dimensions
+
+<ParamField path="width" type="string | number" default="100%">
+  Width of the visualizer. Can be a number (pixels) or string (e.g., "100%", "500px").
+</ParamField>
+
+<ParamField path="height" type="string | number" default="200">
+  Height of the visualizer canvas. Can be a number (pixels) or string (e.g., "200px", "50vh").
+</ParamField>
+
+### Visualization Appearance
+
+<ParamField path="backgroundColor" type="string" default="transparent">
+  Background color of the canvas. Accepts any valid CSS color value (hex, rgb, rgba, named colors).
+</ParamField>
+
+<ParamField path="mainBarColor" type="string" default="#FFFFFF">
+  Color of the main waveform bars (active/played portion). Accepts any valid CSS color value.
+</ParamField>
+
+<ParamField path="secondaryBarColor" type="string" default="#5e5e5e">
+  Color of the secondary waveform bars (inactive/unplayed portion). Accepts any valid CSS color value.
+</ParamField>
+
+<ParamField path="barWidth" type="number" default="2">
+  Width of each waveform bar in pixels.
+</ParamField>
+
+<ParamField path="gap" type="number" default="1">
+  Gap between waveform bars. This value is multiplied by the bar width to determine actual spacing.
+</ParamField>
+
+<ParamField path="rounded" type="number" default="5">
+  Border radius applied to waveform bars in pixels. Set to 0 for rectangular bars.
+</ParamField>
+
+### Animation & Behavior
+
+<ParamField path="speed" type="number" default="3">
+  Speed of the waveform animation during recording. Higher values mean slower animation. Value is truncated to integer.
+</ParamField>
+
+<ParamField path="animateCurrentPick" type="boolean" default="true">
+  Whether to animate the currently recording bar with a pulsing effect.
+</ParamField>
+
+<ParamField path="fullscreen" type="boolean" default="false">
+  Whether the waveform should extend to fill the entire canvas height. When false, waveform is centered vertically.
+</ParamField>
+
+### UI Controls
+
+<ParamField path="isControlPanelShown" type="boolean" default="true">
+  Whether to display the control panel with play/pause/stop buttons and time display.
+</ParamField>
+
+<ParamField path="isDownloadAudioButtonShown" type="boolean" default="false">
+  Whether to display the "Download Audio" button in the control panel.
+</ParamField>
+
+<ParamField path="onlyRecording" type="boolean" default="false">
+  When true, hides playback-related UI elements and clears the canvas after recording stops. Useful for recording-only interfaces.
+</ParamField>
+
+### Default UI (Microphone Icon)
+
+<ParamField path="isDefaultUIShown" type="boolean" default="true">
+  Whether to show the default UI when the canvas is cleared (microphone icon and audio wave decorations).
+</ParamField>
+
+<ParamField path="defaultMicrophoneIconColor" type="string" default="mainBarColor">
+  Color of the microphone icon in the default UI. Defaults to the same color as `mainBarColor`.
+</ParamField>
+
+<ParamField path="defaultAudioWaveIconColor" type="string" default="mainBarColor">
+  Color of the decorative audio wave icons in the default UI. Defaults to the same color as `mainBarColor`.
+</ParamField>
+
+### Progress Indicator
+
+<ParamField path="isProgressIndicatorShown" type="boolean" default="!onlyRecording">
+  Whether to show the progress indicator line during playback. Automatically disabled when `onlyRecording` is true.
+</ParamField>
+
+<ParamField path="isProgressIndicatorTimeShown" type="boolean" default="true">
+  Whether to show the current time label on the progress indicator.
+</ParamField>
+
+<ParamField path="isProgressIndicatorOnHoverShown" type="boolean" default="!onlyRecording">
+  Whether to show the hover progress indicator when the user hovers over the waveform. Automatically disabled when `onlyRecording` is true.
+</ParamField>
+
+<ParamField path="isProgressIndicatorTimeOnHoverShown" type="boolean" default="true">
+  Whether to show the time label on the hover progress indicator.
+</ParamField>
+
+### Audio Processing UI
+
+<ParamField path="isAudioProcessingTextShown" type="boolean" default="true">
+  Whether to show the "Processing Audio..." text while audio is being processed.
+</ParamField>
+
+<ParamField path="audioProcessingElem" type="React.ReactNode">
+  Custom React element to display instead of the default "Processing Audio..." text. Only shown when `isAudioProcessingTextShown` is true.
+</ParamField>
+
+### CSS Class Names
+
+All className props allow you to add custom CSS classes to specific elements for styling customization.
+
+<ParamField path="mainContainerClassName" type="string">
+  CSS class name(s) applied to the main container element.
+</ParamField>
+
+<ParamField path="canvasContainerClassName" type="string">
+  CSS class name(s) applied to the canvas container element.
+</ParamField>
+
+<ParamField path="progressIndicatorClassName" type="string">
+  CSS class name(s) applied to the progress indicator element.
+</ParamField>
+
+<ParamField path="progressIndicatorTimeClassName" type="string">
+  CSS class name(s) applied to the progress indicator time label.
+</ParamField>
+
+<ParamField path="progressIndicatorOnHoverClassName" type="string">
+  CSS class name(s) applied to the hover progress indicator element.
+</ParamField>
+
+<ParamField path="progressIndicatorTimeOnHoverClassName" type="string">
+  CSS class name(s) applied to the hover progress indicator time label.
+</ParamField>
+
+<ParamField path="audioProcessingTextClassName" type="string">
+  CSS class name(s) applied to the audio processing text/element.
+</ParamField>
+
+<ParamField path="controlButtonsClassName" type="string">
+  CSS class name(s) applied to the control buttons (Clear, Download Audio).
+</ParamField>
+
+## Examples
+
+### Basic Setup
+
+```tsx
+import { useVoiceVisualizer, VoiceVisualizer } from '@gideo-llc/react-voice-visualizer';
+
+function App() {
+  const controls = useVoiceVisualizer();
+
+  return (
+    <VoiceVisualizer controls={controls} />
+  );
+}
+```
+
+### Custom Colors & Styling
+
+```tsx
+import { useVoiceVisualizer, VoiceVisualizer } from '@gideo-llc/react-voice-visualizer';
+
+function CustomStyledVisualizer() {
+  const controls = useVoiceVisualizer();
+
+  return (
+    <VoiceVisualizer 
+      controls={controls}
+      height={300}
+      width="100%"
+      backgroundColor="#1a1a1a"
+      mainBarColor="#00ff88"
+      secondaryBarColor="#333333"
+      barWidth={3}
+      gap={2}
+      rounded={10}
+    />
+  );
+}
+```
+
+### Recording Only Mode
+
+```tsx
+import { useVoiceVisualizer, VoiceVisualizer } from '@gideo-llc/react-voice-visualizer';
+
+function RecordingOnlyMode() {
+  const controls = useVoiceVisualizer();
+
+  return (
+    <VoiceVisualizer 
+      controls={controls}
+      onlyRecording={true}
+      isDownloadAudioButtonShown={false}
+    />
+  );
+}
+```
+
+### Custom Audio Processing UI
+
+```tsx
+import { useVoiceVisualizer, VoiceVisualizer } from '@gideo-llc/react-voice-visualizer';
+
+function CustomProcessingUI() {
+  const controls = useVoiceVisualizer();
+
+  return (
+    <VoiceVisualizer 
+      controls={controls}
+      audioProcessingElem={
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div className="spinner" />
+          <span>Converting audio...</span>
+        </div>
+      }
+    />
+  );
+}
+```
+
+### Minimal UI with Custom Classes
+
+```tsx
+import { useVoiceVisualizer, VoiceVisualizer } from '@gideo-llc/react-voice-visualizer';
+import './custom-visualizer.css';
+
+function MinimalVisualizer() {
+  const controls = useVoiceVisualizer();
+
+  return (
+    <VoiceVisualizer 
+      controls={controls}
+      isDefaultUIShown={false}
+      isControlPanelShown={false}
+      mainContainerClassName="custom-container"
+      canvasContainerClassName="custom-canvas"
+    />
+  );
+}
+```
+
+### With Download Button
+
+```tsx
+import { useVoiceVisualizer, VoiceVisualizer } from '@gideo-llc/react-voice-visualizer';
+
+function WithDownload() {
+  const controls = useVoiceVisualizer();
+
+  return (
+    <VoiceVisualizer 
+      controls={controls}
+      isDownloadAudioButtonShown={true}
+    />
+  );
+}
+```
+
+### Fullscreen Waveform
+
+```tsx
+import { useVoiceVisualizer, VoiceVisualizer } from '@gideo-llc/react-voice-visualizer';
+
+function FullscreenWaveform() {
+  const controls = useVoiceVisualizer();
+
+  return (
+    <VoiceVisualizer 
+      controls={controls}
+      fullscreen={true}
+      height={400}
+      barWidth={4}
+      gap={1}
+    />
+  );
+}
+```
+
+## Notes
+
+- The component automatically handles responsive behavior and adapts to mobile screens (< 768px)
+- Canvas is automatically resized using ResizeObserver for responsive layouts
+- Click on the waveform during playback to seek to a specific position
+- All numeric values (gap, barWidth, speed, rounded) are automatically truncated to integers
+- On mobile devices, bar width is automatically increased by 1 pixel when gap > 0 for better visibility
+- The component includes built-in CSS styles imported from the library

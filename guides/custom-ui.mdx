@@ -1,0 +1,570 @@
+---
+title: 'Custom UI'
+description: 'Build custom user interfaces with your own controls'
+icon: 'paintbrush'
+---
+
+## Overview
+
+While the `VoiceVisualizer` component provides a complete UI out of the box, you can build entirely custom interfaces using the `useVoiceVisualizer` hook controls. This is perfect for:
+
+- Matching your app's design system
+- Creating mobile-optimized layouts
+- Building specialized recording workflows
+- Adding custom buttons and controls
+
+## Hiding the Default UI
+
+Set `isControlPanelShown={false}` to hide the built-in control panel:
+
+```tsx
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function CustomRecorder() {
+  const controls = useVoiceVisualizer();
+
+  return (
+    <VoiceVisualizer
+      controls={controls}
+      isControlPanelShown={false}
+    />
+  );
+}
+```
+
+You can also hide the default canvas UI:
+
+```tsx
+<VoiceVisualizer
+  controls={controls}
+  isControlPanelShown={false}
+  isDefaultUIShown={false}
+/>
+```
+
+## Building Custom Controls
+
+Use the control functions from the hook to build your own UI:
+
+```tsx
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function CustomRecorder() {
+  const controls = useVoiceVisualizer();
+  
+  const {
+    startRecording,
+    stopRecording,
+    togglePauseResume,
+    clearCanvas,
+    saveAudioFile,
+    isRecordingInProgress,
+    isPausedRecording,
+    isAvailableRecordedAudio,
+    isCleared,
+    formattedRecordingTime,
+    formattedDuration,
+  } = controls;
+
+  return (
+    <div className="custom-recorder">
+      <VoiceVisualizer
+        controls={controls}
+        isControlPanelShown={false}
+      />
+      
+      <div className="custom-controls">
+        {isCleared ? (
+          <button onClick={startRecording}>Start Recording</button>
+        ) : isRecordingInProgress ? (
+          <>
+            <button onClick={togglePauseResume}>
+              {isPausedRecording ? 'Resume' : 'Pause'}
+            </button>
+            <button onClick={stopRecording}>Stop</button>
+            <span>{formattedRecordingTime}</span>
+          </>
+        ) : (
+          <>
+            <button 
+              onClick={togglePauseResume}
+              disabled={!isAvailableRecordedAudio}
+            >
+              Play
+            </button>
+            <button onClick={clearCanvas}>Clear</button>
+            <button onClick={saveAudioFile}>Download</button>
+            <span>{formattedDuration}</span>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+```
+
+## Available Control Functions
+
+All functions available for building custom UI:
+
+<AccordionGroup>
+  <Accordion title="startRecording()" icon="microphone">
+    Starts audio recording. Automatically requests microphone permissions.
+    
+    ```tsx
+    const { startRecording, isProcessingStartRecording } = useVoiceVisualizer();
+    
+    <button 
+      onClick={startRecording}
+      disabled={isProcessingStartRecording}
+    >
+      {isProcessingStartRecording ? 'Starting...' : 'Record'}
+    </button>
+    ```
+    
+    <Note>
+      Use `isProcessingStartRecording` to show loading state while waiting for permissions.
+    </Note>
+  </Accordion>
+  
+  <Accordion title="stopRecording()" icon="stop">
+    Stops recording and processes the audio blob.
+    
+    ```tsx
+    const { stopRecording, isRecordingInProgress } = useVoiceVisualizer();
+    
+    {isRecordingInProgress && (
+      <button onClick={stopRecording}>Stop Recording</button>
+    )}
+    ```
+  </Accordion>
+  
+  <Accordion title="togglePauseResume()" icon="pause">
+    Toggles pause/resume for both recording and playback.
+    
+    ```tsx
+    const { 
+      togglePauseResume, 
+      isPausedRecording,
+      isPausedRecordedAudio,
+      isRecordingInProgress 
+    } = useVoiceVisualizer();
+    
+    <button onClick={togglePauseResume}>
+      {isRecordingInProgress 
+        ? (isPausedRecording ? 'Resume Recording' : 'Pause Recording')
+        : (isPausedRecordedAudio ? 'Play' : 'Pause')
+      }
+    </button>
+    ```
+  </Accordion>
+  
+  <Accordion title="startAudioPlayback()" icon="play">
+    Explicitly starts or resumes audio playback.
+    
+    ```tsx
+    const { startAudioPlayback, isAvailableRecordedAudio } = useVoiceVisualizer();
+    
+    <button 
+      onClick={startAudioPlayback}
+      disabled={!isAvailableRecordedAudio}
+    >
+      Play
+    </button>
+    ```
+  </Accordion>
+  
+  <Accordion title="stopAudioPlayback()" icon="pause">
+    Explicitly pauses audio playback.
+    
+    ```tsx
+    const { stopAudioPlayback, isPausedRecordedAudio } = useVoiceVisualizer();
+    
+    {!isPausedRecordedAudio && (
+      <button onClick={stopAudioPlayback}>Pause</button>
+    )}
+    ```
+  </Accordion>
+  
+  <Accordion title="clearCanvas()" icon="trash">
+    Clears the visualization and resets all state.
+    
+    ```tsx
+    const { clearCanvas, isCleared } = useVoiceVisualizer();
+    
+    {!isCleared && (
+      <button onClick={clearCanvas}>Clear Recording</button>
+    )}
+    ```
+  </Accordion>
+  
+  <Accordion title="saveAudioFile()" icon="download">
+    Downloads the recorded audio as a WebM file.
+    
+    ```tsx
+    const { saveAudioFile, recordedBlob } = useVoiceVisualizer();
+    
+    <button 
+      onClick={saveAudioFile}
+      disabled={!recordedBlob}
+    >
+      Download Audio
+    </button>
+    ```
+  </Accordion>
+  
+  <Accordion title="setCurrentAudioTime()" icon="clock">
+    Seeks to a specific time in the recorded audio.
+    
+    ```tsx
+    const { setCurrentAudioTime, duration } = useVoiceVisualizer();
+    
+    <input
+      type="range"
+      min={0}
+      max={duration}
+      onChange={(e) => setCurrentAudioTime(Number(e.target.value))}
+    />
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## State Values for Custom UI
+
+Use these state values to control UI visibility and behavior:
+
+<ResponseField name="isRecordingInProgress" type="boolean">
+  True when actively recording
+</ResponseField>
+
+<ResponseField name="isPausedRecording" type="boolean">
+  True when recording is paused
+</ResponseField>
+
+<ResponseField name="isCleared" type="boolean">
+  True when no recording exists (initial state)
+</ResponseField>
+
+<ResponseField name="isAvailableRecordedAudio" type="boolean">
+  True when recorded audio is ready for playback (not processing)
+</ResponseField>
+
+<ResponseField name="isPausedRecordedAudio" type="boolean">
+  True when recorded audio playback is paused
+</ResponseField>
+
+<ResponseField name="isProcessingRecordedAudio" type="boolean">
+  True when audio is being processed after recording
+</ResponseField>
+
+<ResponseField name="isProcessingStartRecording" type="boolean">
+  True when waiting for microphone permissions or recording to start
+</ResponseField>
+
+<ResponseField name="recordedBlob" type="Blob | null">
+  The recorded audio blob (available after stopping)
+</ResponseField>
+
+## Complete Custom UI Example
+
+```tsx
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+import './CustomRecorder.css';
+
+function CustomRecorder() {
+  const controls = useVoiceVisualizer({
+    onStartRecording: () => console.log('Started'),
+    onStopRecording: () => console.log('Stopped'),
+  });
+  
+  const {
+    startRecording,
+    stopRecording,
+    togglePauseResume,
+    clearCanvas,
+    saveAudioFile,
+    isRecordingInProgress,
+    isPausedRecording,
+    isAvailableRecordedAudio,
+    isPausedRecordedAudio,
+    isCleared,
+    isProcessingStartRecording,
+    isProcessingRecordedAudio,
+    formattedRecordingTime,
+    formattedDuration,
+    formattedRecordedAudioCurrentTime,
+  } = controls;
+
+  return (
+    <div className="recorder-container">
+      {/* Visualization */}
+      <VoiceVisualizer
+        controls={controls}
+        isControlPanelShown={false}
+        mainBarColor="#00ff88"
+        secondaryBarColor="#333333"
+        backgroundColor="#0a0a0a"
+        height={200}
+      />
+      
+      {/* Time Display */}
+      <div className="time-display">
+        {isRecordingInProgress ? (
+          <span className="recording-time">{formattedRecordingTime}</span>
+        ) : formattedDuration ? (
+          <span className="duration">
+            {formattedRecordedAudioCurrentTime} / {formattedDuration}
+          </span>
+        ) : (
+          <span className="ready">Ready to record</span>
+        )}
+      </div>
+      
+      {/* Processing State */}
+      {isProcessingRecordedAudio && (
+        <div className="processing">Processing audio...</div>
+      )}
+      
+      {/* Control Buttons */}
+      <div className="controls">
+        {isCleared ? (
+          // Initial state - show record button
+          <button 
+            className="btn-record"
+            onClick={startRecording}
+            disabled={isProcessingStartRecording}
+          >
+            {isProcessingStartRecording ? (
+              <span className="spinner" />
+            ) : (
+              <span className="icon-mic">🎤</span>
+            )}
+            {isProcessingStartRecording ? 'Starting...' : 'Start Recording'}
+          </button>
+        ) : isRecordingInProgress ? (
+          // Recording state - show pause and stop
+          <>
+            <button 
+              className="btn-pause"
+              onClick={togglePauseResume}
+            >
+              {isPausedRecording ? '▶️ Resume' : '⏸️ Pause'}
+            </button>
+            <button 
+              className="btn-stop"
+              onClick={stopRecording}
+            >
+              ⏹️ Stop
+            </button>
+          </>
+        ) : (
+          // Playback state - show play, clear, download
+          <>
+            <button
+              className="btn-play"
+              onClick={togglePauseResume}
+              disabled={!isAvailableRecordedAudio}
+            >
+              {isPausedRecordedAudio ? '▶️ Play' : '⏸️ Pause'}
+            </button>
+            <button 
+              className="btn-clear"
+              onClick={clearCanvas}
+              disabled={isProcessingRecordedAudio}
+            >
+              🗑️ Clear
+            </button>
+            <button 
+              className="btn-download"
+              onClick={saveAudioFile}
+              disabled={isProcessingRecordedAudio}
+            >
+              ⬇️ Download
+            </button>
+          </>
+        )}
+      </div>
+      
+      {/* Recording indicator */}
+      {isRecordingInProgress && (
+        <div className="recording-indicator">
+          <span className={`dot ${isPausedRecording ? 'paused' : 'active'}`} />
+          {isPausedRecording ? 'Paused' : 'Recording'}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default CustomRecorder;
+```
+
+## Custom Playback Progress Bar
+
+Build a custom progress bar for audio playback:
+
+```tsx
+function CustomProgressBar() {
+  const controls = useVoiceVisualizer();
+  const { 
+    currentAudioTime, 
+    duration, 
+    setCurrentAudioTime,
+    audioRef 
+  } = controls;
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTime = Number(e.target.value);
+    setCurrentAudioTime(newTime);
+    if (audioRef.current) {
+      audioRef.current.currentTime = newTime;
+    }
+  };
+
+  const progress = duration ? (currentAudioTime / duration) * 100 : 0;
+
+  return (
+    <div className="progress-bar-container">
+      <div className="progress-bar">
+        <div 
+          className="progress-fill" 
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+      <input
+        type="range"
+        min={0}
+        max={duration || 0}
+        value={currentAudioTime}
+        onChange={handleSeek}
+        className="progress-slider"
+      />
+    </div>
+  );
+}
+```
+
+## Mobile-Optimized Example
+
+```tsx
+function MobileRecorder() {
+  const controls = useVoiceVisualizer();
+  const { 
+    startRecording,
+    stopRecording,
+    togglePauseResume,
+    isRecordingInProgress,
+    isPausedRecording,
+    isCleared,
+    formattedRecordingTime 
+  } = controls;
+
+  return (
+    <div className="mobile-recorder">
+      <VoiceVisualizer
+        controls={controls}
+        isControlPanelShown={false}
+        height={150}
+        barWidth={2}
+        gap={1}
+      />
+      
+      <div className="mobile-controls">
+        {isCleared ? (
+          <button 
+            className="record-btn-large"
+            onClick={startRecording}
+          >
+            <span className="mic-icon">🎤</span>
+          </button>
+        ) : isRecordingInProgress ? (
+          <div className="recording-controls">
+            <button 
+              className="icon-btn"
+              onClick={togglePauseResume}
+            >
+              {isPausedRecording ? '▶️' : '⏸️'}
+            </button>
+            <div className="recording-time">
+              {formattedRecordingTime}
+            </div>
+            <button 
+              className="icon-btn stop"
+              onClick={stopRecording}
+            >
+              ⏹️
+            </button>
+          </div>
+        ) : (
+          <div className="playback-controls">
+            {/* Add playback controls */}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+```
+
+## Callbacks for Custom UI
+
+Use callbacks to trigger custom UI updates:
+
+```tsx
+const controls = useVoiceVisualizer({
+  onStartRecording: () => {
+    console.log('Recording started');
+    showNotification('Recording...');
+  },
+  onStopRecording: () => {
+    console.log('Recording stopped');
+    showNotification('Processing audio...');
+  },
+  onPausedRecording: () => {
+    console.log('Recording paused');
+  },
+  onResumedRecording: () => {
+    console.log('Recording resumed');
+  },
+  onStartAudioPlayback: () => {
+    console.log('Playback started');
+  },
+  onEndAudioPlayback: () => {
+    console.log('Playback ended');
+    // Auto-restart or show completion UI
+  },
+  onClearCanvas: () => {
+    console.log('Canvas cleared');
+  },
+});
+```
+
+## Tips for Custom UI
+
+<Tip>
+  Always check `isAvailableRecordedAudio` before enabling playback controls to ensure audio is ready.
+</Tip>
+
+<Tip>
+  Use `isProcessingStartRecording` to show a loading state when requesting microphone permissions.
+</Tip>
+
+<Tip>
+  The `formattedRecordingTime`, `formattedDuration`, and `formattedRecordedAudioCurrentTime` values are pre-formatted for display.
+</Tip>
+
+<Warning>
+  Don't call `startRecording()` while `isRecordingInProgress` is true, or `stopRecording()` when not recording. The functions include guards but it's best to disable buttons appropriately.
+</Warning>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Callbacks" icon="webhook" href="/api/use-voice-visualizer#callbacks">
+    Learn about all available callbacks
+  </Card>
+  
+  <Card title="Error Handling" icon="triangle-exclamation" href="/guides/error-handling">
+    Handle errors in your custom UI
+  </Card>
+</CardGroup>

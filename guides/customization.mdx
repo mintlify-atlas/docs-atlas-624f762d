@@ -1,0 +1,444 @@
+---
+title: 'Customization'
+description: 'Customize the visual appearance of the voice visualizer'
+icon: 'palette'
+---
+
+## Overview
+
+The `VoiceVisualizer` component offers extensive customization options for colors, dimensions, animations, and UI elements. All customization is done through component props.
+
+## Color Customization
+
+Control all color aspects of the visualizer:
+
+### Basic Colors
+
+```tsx
+<VoiceVisualizer
+  controls={recorderControls}
+  backgroundColor="#1a1a1a"
+  mainBarColor="#00ff88"
+  secondaryBarColor="#444444"
+/>
+```
+
+<ParamField path="backgroundColor" type="string" default="transparent">
+  Background color of the visualization canvas
+</ParamField>
+
+<ParamField path="mainBarColor" type="string" default="#FFFFFF">
+  Color of the active/main audio wave bars
+</ParamField>
+
+<ParamField path="secondaryBarColor" type="string" default="#5e5e5e">
+  Color of the inactive/secondary audio wave bars
+</ParamField>
+
+### Icon Colors
+
+```tsx
+<VoiceVisualizer
+  controls={recorderControls}
+  defaultMicrophoneIconColor="#00ff88"
+  defaultAudioWaveIconColor="#00ff88"
+/>
+```
+
+<ParamField path="defaultMicrophoneIconColor" type="string" default="mainBarColor">
+  Color of the default microphone icon shown before recording
+</ParamField>
+
+<ParamField path="defaultAudioWaveIconColor" type="string" default="mainBarColor">
+  Color of the decorative audio wave icons in the default UI
+</ParamField>
+
+## Dimensions
+
+Control the size of the visualizer:
+
+```tsx
+<VoiceVisualizer
+  controls={recorderControls}
+  width="100%"
+  height={300}
+/>
+```
+
+<ParamField path="width" type="string | number" default="100%">
+  Width of the visualizer. Accepts CSS values ("500px", "100%") or numbers (500)
+</ParamField>
+
+<ParamField path="height" type="string | number" default={200}>
+  Height of the visualizer. Accepts CSS values ("300px") or numbers (300)
+</ParamField>
+
+<Note>
+  The visualizer is fully responsive and will adapt to container size changes.
+</Note>
+
+## Wave Bar Styling
+
+Customize the appearance of individual audio bars:
+
+```tsx
+<VoiceVisualizer
+  controls={recorderControls}
+  barWidth={3}
+  gap={2}
+  rounded={8}
+  speed={2}
+/>
+```
+
+<ParamField path="barWidth" type="number" default={2}>
+  Width of each audio wave bar in pixels
+</ParamField>
+
+<ParamField path="gap" type="number" default={1}>
+  Gap multiplier between bars. The actual gap is calculated as `gap * barWidth`
+</ParamField>
+
+<ParamField path="rounded" type="number" default={5}>
+  Border radius of the wave bars in pixels
+</ParamField>
+
+<ParamField path="speed" type="number" default={3}>
+  Animation speed (1-6). Higher numbers = slower animation. Must be an integer.
+</ParamField>
+
+### Bar Styling Examples
+
+<Tabs>
+  <Tab title="Thin & Fast">
+    ```tsx
+    <VoiceVisualizer
+      controls={recorderControls}
+      barWidth={1}
+      gap={1}
+      rounded={2}
+      speed={1}
+    />
+    ```
+    Creates a dense, fast-moving visualization
+  </Tab>
+  
+  <Tab title="Thick & Slow">
+    ```tsx
+    <VoiceVisualizer
+      controls={recorderControls}
+      barWidth={4}
+      gap={2}
+      rounded={10}
+      speed={5}
+    />
+    ```
+    Creates a spacious, slow-moving visualization
+  </Tab>
+  
+  <Tab title="Sharp Edges">
+    ```tsx
+    <VoiceVisualizer
+      controls={recorderControls}
+      barWidth={2}
+      gap={0}
+      rounded={0}
+      speed={3}
+    />
+    ```
+    Creates rectangular bars with no gaps
+  </Tab>
+</Tabs>
+
+## Animation Options
+
+Control animation behavior:
+
+```tsx
+<VoiceVisualizer
+  controls={recorderControls}
+  animateCurrentPick={true}
+  fullscreen={false}
+/>
+```
+
+<ParamField path="animateCurrentPick" type="boolean" default={true}>
+  Whether to animate the currently active bar during recording
+</ParamField>
+
+<ParamField path="fullscreen" type="boolean" default={false}>
+  Display visualization in fullscreen mode, starting from the center
+</ParamField>
+
+## Progress Indicators
+
+Customize or hide progress indicators:
+
+### Main Progress Indicator
+
+```tsx
+<VoiceVisualizer
+  controls={recorderControls}
+  isProgressIndicatorShown={true}
+  progressIndicatorClassName="custom-indicator"
+  isProgressIndicatorTimeShown={true}
+  progressIndicatorTimeClassName="custom-time"
+/>
+```
+
+<ParamField path="isProgressIndicatorShown" type="boolean" default={true}>
+  Show the main progress indicator during playback (hidden when `onlyRecording={true}`)
+</ParamField>
+
+<ParamField path="progressIndicatorClassName" type="string">
+  Custom CSS class for the progress indicator element
+</ParamField>
+
+<ParamField path="isProgressIndicatorTimeShown" type="boolean" default={true}>
+  Show the time label on the progress indicator
+</ParamField>
+
+<ParamField path="progressIndicatorTimeClassName" type="string">
+  Custom CSS class for the progress indicator time label
+</ParamField>
+
+### Hover Progress Indicator
+
+```tsx
+<VoiceVisualizer
+  controls={recorderControls}
+  isProgressIndicatorOnHoverShown={true}
+  progressIndicatorOnHoverClassName="custom-hover"
+  isProgressIndicatorTimeOnHoverShown={true}
+  progressIndicatorTimeOnHoverClassName="custom-hover-time"
+/>
+```
+
+<ParamField path="isProgressIndicatorOnHoverShown" type="boolean" default={true}>
+  Show progress indicator when hovering over the waveform (hidden when `onlyRecording={true}`)
+</ParamField>
+
+<ParamField path="progressIndicatorOnHoverClassName" type="string">
+  Custom CSS class for the hover progress indicator
+</ParamField>
+
+<ParamField path="isProgressIndicatorTimeOnHoverShown" type="boolean" default={true}>
+  Show time label on hover indicator
+</ParamField>
+
+<ParamField path="progressIndicatorTimeOnHoverClassName" type="string">
+  Custom CSS class for the hover time label
+</ParamField>
+
+## UI Element Visibility
+
+Control which UI elements are displayed:
+
+```tsx
+<VoiceVisualizer
+  controls={recorderControls}
+  isControlPanelShown={true}
+  isDownloadAudioButtonShown={true}
+  isDefaultUIShown={true}
+  onlyRecording={false}
+/>
+```
+
+<ParamField path="isControlPanelShown" type="boolean" default={true}>
+  Show the control panel with playback controls, duration, and buttons. Set to `false` to build custom UI.
+</ParamField>
+
+<ParamField path="isDownloadAudioButtonShown" type="boolean" default={false}>
+  Show the "Download Audio" button in the control panel
+</ParamField>
+
+<ParamField path="isDefaultUIShown" type="boolean" default={true}>
+  Show the default UI (microphone icon and decorative waves) before recording starts
+</ParamField>
+
+<ParamField path="onlyRecording" type="boolean" default={false}>
+  Only show visualization during recording. Hides playback features and progress indicators.
+</ParamField>
+
+## Processing Text Customization
+
+Customize the "Processing Audio..." message:
+
+```tsx
+<VoiceVisualizer
+  controls={recorderControls}
+  isAudioProcessingTextShown={true}
+  audioProcessingTextClassName="custom-processing"
+  audioProcessingElem={<span>Analyzing audio...</span>}
+/>
+```
+
+<ParamField path="isAudioProcessingTextShown" type="boolean" default={true}>
+  Show processing text while audio is being processed
+</ParamField>
+
+<ParamField path="audioProcessingTextClassName" type="string">
+  Custom CSS class for the processing text
+</ParamField>
+
+<ParamField path="audioProcessingElem" type="React.ReactNode">
+  Custom element to display instead of the default "Processing Audio..." text
+</ParamField>
+
+## Container Classes
+
+Apply custom CSS classes to container elements:
+
+```tsx
+<VoiceVisualizer
+  controls={recorderControls}
+  mainContainerClassName="my-visualizer-container"
+  canvasContainerClassName="my-canvas-wrapper"
+  controlButtonsClassName="my-control-buttons"
+/>
+```
+
+<ParamField path="mainContainerClassName" type="string">
+  CSS class for the outermost container element
+</ParamField>
+
+<ParamField path="canvasContainerClassName" type="string">
+  CSS class for the canvas container element
+</ParamField>
+
+<ParamField path="controlButtonsClassName" type="string">
+  CSS class for the "Clear" and "Download Audio" buttons
+</ParamField>
+
+## Complete Customization Example
+
+```tsx
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function CustomizedRecorder() {
+  const recorderControls = useVoiceVisualizer();
+
+  return (
+    <VoiceVisualizer
+      controls={recorderControls}
+      // Dimensions
+      width="100%"
+      height={250}
+      
+      // Colors
+      backgroundColor="#0a0a0a"
+      mainBarColor="#00ff88"
+      secondaryBarColor="#333333"
+      defaultMicrophoneIconColor="#00ff88"
+      defaultAudioWaveIconColor="#00ff88"
+      
+      // Wave bars
+      barWidth={3}
+      gap={1.5}
+      rounded={8}
+      speed={2}
+      
+      // Animation
+      animateCurrentPick={true}
+      fullscreen={false}
+      
+      // UI visibility
+      isControlPanelShown={true}
+      isDownloadAudioButtonShown={true}
+      isDefaultUIShown={true}
+      
+      // Progress indicators
+      isProgressIndicatorShown={true}
+      isProgressIndicatorTimeShown={true}
+      isProgressIndicatorOnHoverShown={true}
+      isProgressIndicatorTimeOnHoverShown={true}
+      
+      // Custom classes
+      mainContainerClassName="custom-recorder"
+      canvasContainerClassName="custom-canvas"
+      controlButtonsClassName="custom-buttons"
+      
+      // Processing
+      audioProcessingElem={<div className="spinner">Processing...</div>}
+    />
+  );
+}
+```
+
+## Theme Examples
+
+<Tabs>
+  <Tab title="Dark Theme">
+    ```tsx
+    <VoiceVisualizer
+      controls={recorderControls}
+      backgroundColor="#000000"
+      mainBarColor="#ffffff"
+      secondaryBarColor="#333333"
+      barWidth={2}
+      gap={1}
+      rounded={5}
+    />
+    ```
+  </Tab>
+  
+  <Tab title="Neon Theme">
+    ```tsx
+    <VoiceVisualizer
+      controls={recorderControls}
+      backgroundColor="#0a0a0a"
+      mainBarColor="#00ff88"
+      secondaryBarColor="#1a1a1a"
+      barWidth={3}
+      gap={2}
+      rounded={10}
+      animateCurrentPick={true}
+    />
+    ```
+  </Tab>
+  
+  <Tab title="Minimal Theme">
+    ```tsx
+    <VoiceVisualizer
+      controls={recorderControls}
+      backgroundColor="transparent"
+      mainBarColor="#000000"
+      secondaryBarColor="#e0e0e0"
+      barWidth={1}
+      gap={1}
+      rounded={0}
+      isDefaultUIShown={false}
+    />
+    ```
+  </Tab>
+</Tabs>
+
+## Responsive Design
+
+The visualizer automatically adjusts to container size changes:
+
+```tsx
+<div style={{ width: '100%', maxWidth: '800px' }}>
+  <VoiceVisualizer
+    controls={recorderControls}
+    width="100%"
+    height={200}
+  />
+</div>
+```
+
+<Note>
+  On mobile devices (screen width < 768px), the `barWidth` is automatically increased by 1 pixel when `gap > 0` for better visibility.
+</Note>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Custom UI" icon="paintbrush" href="/guides/custom-ui">
+    Build completely custom controls and UI
+  </Card>
+  
+  <Card title="API Reference" icon="code" href="/api/voice-visualizer">
+    View complete prop documentation
+  </Card>
+</CardGroup>

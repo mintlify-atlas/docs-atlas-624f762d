@@ -1,0 +1,512 @@
+---
+title: 'Error Handling'
+description: 'Handle errors and edge cases in audio recording'
+icon: 'triangle-exclamation'
+---
+
+## Overview
+
+The React Voice Visualizer library provides comprehensive error handling for common audio recording and playback issues. The `useVoiceVisualizer` hook exposes an `error` state that contains any errors that occur.
+
+## Error State
+
+Access errors through the `error` property:
+
+```tsx
+import { useEffect } from 'react';
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function ErrorAwareRecorder() {
+  const recorderControls = useVoiceVisualizer();
+  const { error } = recorderControls;
+
+  useEffect(() => {
+    if (error) {
+      console.error('Recording error:', error);
+      // Handle error
+    }
+  }, [error]);
+
+  return (
+    <div>
+      {error && (
+        <div className="error-message">
+          Error: {error.message}
+        </div>
+      )}
+      <VoiceVisualizer controls={recorderControls} />
+    </div>
+  );
+}
+```
+
+<Note>
+  The `error` state is automatically set to `null` when cleared. When an error occurs, the canvas is automatically cleared.
+</Note>
+
+## Common Error Types
+
+The library handles several types of errors:
+
+### Microphone Permission Denied
+
+Occurs when the user denies microphone access:
+
+```tsx
+function PermissionHandler() {
+  const recorderControls = useVoiceVisualizer();
+  const { error, startRecording } = recorderControls;
+
+  const handleStartRecording = () => {
+    startRecording();
+  };
+
+  useEffect(() => {
+    if (error) {
+      if (error.message.includes('permission') || 
+          error.name === 'NotAllowedError') {
+        alert('Microphone access is required to record audio. Please allow microphone access in your browser settings.');
+      }
+    }
+  }, [error]);
+
+  return (
+    <div>
+      {error && (
+        <div className="error">
+          <p>❌ {error.message}</p>
+          <button onClick={handleStartRecording}>Try Again</button>
+        </div>
+      )}
+      <VoiceVisualizer controls={recorderControls} />
+    </div>
+  );
+}
+```
+
+### Empty Audio Blob
+
+Occurs when the recorded audio is empty:
+
+```tsx
+const { error } = useVoiceVisualizer();
+
+useEffect(() => {
+  if (error && error.message.includes('empty')) {
+    console.error('The audio blob is empty. Recording may have been too short.');
+  }
+}, [error]);
+```
+
+This error is thrown when:
+- Recording is stopped immediately after starting
+- No audio data was captured
+- Blob size is 0 bytes
+
+### Audio Processing Error
+
+Occurs when the audio blob cannot be decoded:
+
+```tsx
+const { error, setPreloadedAudioBlob } = useVoiceVisualizer();
+
+useEffect(() => {
+  if (error && error.message.includes('processing')) {
+    console.error('Failed to process audio. The file may be corrupted or in an unsupported format.');
+  }
+}, [error]);
+```
+
+This can happen when:
+- Audio format is not supported by the browser
+- Audio file is corrupted
+- Blob data is invalid
+
+### Audio Playback Error
+
+Handle playback errors with the `onErrorPlayingAudio` callback:
+
+```tsx
+const recorderControls = useVoiceVisualizer({
+  onErrorPlayingAudio: (error: Error) => {
+    console.error('Playback error:', error);
+    alert('Failed to play audio. Please try again.');
+  }
+});
+```
+
+This callback is invoked when `audio.play()` fails, which can occur due to:
+- Browser autoplay policies
+- Audio codec issues
+- Network errors (for streamed audio)
+
+### MediaRecorder Not Supported
+
+Occurs in browsers that don't support the MediaRecorder API:
+
+```tsx
+function BrowserSupportCheck() {
+  const [isSupported, setIsSupported] = useState(true);
+
+  useEffect(() => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setIsSupported(false);
+    }
+    if (!window.MediaRecorder) {
+      setIsSupported(false);
+    }
+  }, []);
+
+  if (!isSupported) {
+    return (
+      <div className="error">
+        Your browser does not support audio recording. 
+        Please use a modern browser like Chrome, Firefox, or Edge.
+      </div>
+    );
+  }
+
+  return <VoiceVisualizer controls={useVoiceVisualizer()} />;
+}
+```
+
+## Complete Error Handling Example
+
+```tsx
+import { useEffect, useState } from 'react';
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function RobustRecorder() {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  
+  const recorderControls = useVoiceVisualizer({
+    onErrorPlayingAudio: (error) => {
+      setErrorMessage(`Playback failed: ${error.message}`);
+    },
+  });
+  
+  const { 
+    error, 
+    startRecording, 
+    clearCanvas,
+    isRecordingInProgress 
+  } = recorderControls;
+
+  useEffect(() => {
+    if (error) {
+      // Categorize and handle different error types
+      if (error.message.includes('empty')) {
+        setErrorMessage('Recording is too short. Please try recording again.');
+      } else if (error.message.includes('permission') || 
+                 error.name === 'NotAllowedError') {
+        setErrorMessage('Microphone access denied. Please allow microphone access in your browser settings.');
+      } else if (error.message.includes('processing')) {
+        setErrorMessage('Failed to process audio. The recording may be corrupted.');
+      } else if (error.name === 'NotFoundError') {
+        setErrorMessage('No microphone found. Please connect a microphone and try again.');
+      } else if (error.name === 'NotReadableError') {
+        setErrorMessage('Microphone is already in use by another application.');
+      } else {
+        setErrorMessage(`An error occurred: ${error.message}`);
+      }
+    } else {
+      setErrorMessage(null);
+    }
+  }, [error]);
+
+  const handleClearError = () => {
+    setErrorMessage(null);
+    clearCanvas();
+  };
+
+  return (
+    <div className="recorder-container">
+      {errorMessage && (
+        <div className="error-banner">
+          <div className="error-content">
+            <span className="error-icon">⚠️</span>
+            <p>{errorMessage}</p>
+          </div>
+          <button 
+            className="error-dismiss"
+            onClick={handleClearError}
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+      
+      <VoiceVisualizer controls={recorderControls} />
+      
+      {error && !isRecordingInProgress && (
+        <button 
+          className="retry-button"
+          onClick={() => {
+            handleClearError();
+            startRecording();
+          }}
+        >
+          Try Recording Again
+        </button>
+      )}
+    </div>
+  );
+}
+
+export default RobustRecorder;
+```
+
+## Error Recovery Strategies
+
+### Automatic Retry
+
+```tsx
+import { useEffect, useRef } from 'react';
+
+function AutoRetryRecorder() {
+  const recorderControls = useVoiceVisualizer();
+  const { error, startRecording, clearCanvas } = recorderControls;
+  const retryCountRef = useRef(0);
+  const maxRetries = 3;
+
+  useEffect(() => {
+    if (error && retryCountRef.current < maxRetries) {
+      console.log(`Retrying... (${retryCountRef.current + 1}/${maxRetries})`);
+      
+      setTimeout(() => {
+        clearCanvas();
+        startRecording();
+        retryCountRef.current += 1;
+      }, 1000);
+    } else if (retryCountRef.current >= maxRetries) {
+      console.error('Max retries reached. Please check your microphone.');
+    }
+  }, [error, startRecording, clearCanvas]);
+
+  return <VoiceVisualizer controls={recorderControls} />;
+}
+```
+
+### Graceful Degradation
+
+```tsx
+function GracefulRecorder() {
+  const [fallbackMode, setFallbackMode] = useState(false);
+  const recorderControls = useVoiceVisualizer();
+  const { error } = recorderControls;
+
+  useEffect(() => {
+    if (error) {
+      // Enable fallback mode (e.g., file upload only)
+      setFallbackMode(true);
+    }
+  }, [error]);
+
+  if (fallbackMode) {
+    return (
+      <div>
+        <p>Recording is not available. Please upload an audio file instead.</p>
+        <input 
+          type="file" 
+          accept="audio/*"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              recorderControls.setPreloadedAudioBlob(file);
+            }
+          }}
+        />
+      </div>
+    );
+  }
+
+  return <VoiceVisualizer controls={recorderControls} />;
+}
+```
+
+## Preventing Page Unload
+
+By default, the library prevents page unload when a recording exists. Control this with `shouldHandleBeforeUnload`:
+
+```tsx
+const recorderControls = useVoiceVisualizer({
+  shouldHandleBeforeUnload: true, // default
+});
+```
+
+When `true`, users see a confirmation dialog if they try to leave the page with an unsaved recording.
+
+Disable this behavior:
+
+```tsx
+const recorderControls = useVoiceVisualizer({
+  shouldHandleBeforeUnload: false,
+});
+```
+
+## Error State Values
+
+Key state values for error handling:
+
+<ResponseField name="error" type="Error | null">
+  Contains the error object when an error occurs. `null` when no error.
+</ResponseField>
+
+<ResponseField name="isProcessingStartRecording" type="boolean">
+  `true` when attempting to start recording (useful for handling permission delays)
+</ResponseField>
+
+<ResponseField name="isProcessingRecordedAudio" type="boolean">
+  `true` when processing audio (after recording or loading). Errors may occur during this phase.
+</ResponseField>
+
+## Validation Before Recording
+
+Validate conditions before starting recording:
+
+```tsx
+function ValidatedRecorder() {
+  const recorderControls = useVoiceVisualizer();
+  const { startRecording } = recorderControls;
+
+  const handleStartWithValidation = async () => {
+    // Check browser support
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert('Your browser does not support audio recording.');
+      return;
+    }
+
+    // Check for microphone devices
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const hasMicrophone = devices.some(device => device.kind === 'audioinput');
+      
+      if (!hasMicrophone) {
+        alert('No microphone detected. Please connect a microphone.');
+        return;
+      }
+    } catch (err) {
+      console.error('Failed to enumerate devices:', err);
+    }
+
+    // Start recording
+    startRecording();
+  };
+
+  return (
+    <div>
+      <button onClick={handleStartWithValidation}>Start Recording</button>
+      <VoiceVisualizer controls={recorderControls} />
+    </div>
+  );
+}
+```
+
+## Error Logging
+
+Log errors for debugging and analytics:
+
+```tsx
+import { useEffect } from 'react';
+
+function LoggedRecorder() {
+  const recorderControls = useVoiceVisualizer({
+    onErrorPlayingAudio: (error) => {
+      // Log to analytics service
+      logError('PlaybackError', error);
+    },
+  });
+  
+  const { error } = recorderControls;
+
+  useEffect(() => {
+    if (error) {
+      // Log to analytics service
+      logError('RecordingError', error);
+      
+      // Send to error tracking service (e.g., Sentry)
+      if (window.Sentry) {
+        window.Sentry.captureException(error);
+      }
+    }
+  }, [error]);
+
+  return <VoiceVisualizer controls={recorderControls} />;
+}
+
+function logError(category: string, error: Error) {
+  console.error(`[${category}]`, {
+    message: error.message,
+    name: error.name,
+    stack: error.stack,
+    timestamp: new Date().toISOString(),
+  });
+}
+```
+
+## Testing Error Scenarios
+
+Test error handling in your application:
+
+```tsx
+// Test component for error scenarios
+function ErrorTestRecorder() {
+  const recorderControls = useVoiceVisualizer();
+  const { setPreloadedAudioBlob, error } = recorderControls;
+
+  const testEmptyBlob = () => {
+    // Test with empty blob
+    const emptyBlob = new Blob([], { type: 'audio/webm' });
+    setPreloadedAudioBlob(emptyBlob);
+  };
+
+  const testInvalidBlob = () => {
+    // Test with invalid audio data
+    const invalidBlob = new Blob(['invalid data'], { type: 'audio/webm' });
+    setPreloadedAudioBlob(invalidBlob);
+  };
+
+  return (
+    <div>
+      <VoiceVisualizer controls={recorderControls} />
+      
+      <div className="test-controls">
+        <button onClick={testEmptyBlob}>Test Empty Blob</button>
+        <button onClick={testInvalidBlob}>Test Invalid Blob</button>
+      </div>
+      
+      {error && <pre>{JSON.stringify(error, null, 2)}</pre>}
+    </div>
+  );
+}
+```
+
+## Best Practices
+
+<Tip>
+  Always display user-friendly error messages instead of technical error details.
+</Tip>
+
+<Tip>
+  Provide clear recovery actions ("Try Again", "Upload Instead", etc.) when errors occur.
+</Tip>
+
+<Tip>
+  Use the `isProcessingStartRecording` state to show loading indicators while requesting permissions.
+</Tip>
+
+<Warning>
+  Never ignore the `error` state. Always handle errors gracefully to prevent poor user experience.
+</Warning>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Callbacks" icon="webhook" href="/api/use-voice-visualizer#callbacks">
+    Learn about all available callbacks
+  </Card>
+  
+  <Card title="API Reference" icon="code" href="/api/use-voice-visualizer">
+    View complete API documentation
+  </Card>
+</CardGroup>

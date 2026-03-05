@@ -1,0 +1,206 @@
+---
+title: "Migration Guide: v1.x to v2.x"
+description: "Learn how to upgrade from React Voice Visualizer v1.x to v2.x"
+---
+
+## Overview
+
+Version 2.x.x brings improvements to the developer experience with simplified ref handling and introduces powerful new features for working with preloaded audio blobs. This guide will walk you through the breaking changes and help you upgrade your application smoothly.
+
+## Breaking Changes
+
+<Warning>
+  **Ref Handling Update**: In version 2.x.x, the library now manages audio references (`audioRef`) internally. You no longer need to pass `ref={audioRef}` to audio components separately.
+</Warning>
+
+### Automatic Audio Reference Management
+
+The library has been enhanced to manage audio references internally, providing a more seamless and intuitive experience.
+
+#### Before (v1.x)
+
+In version 1.x, you needed to manually pass the `audioRef` to your audio elements:
+
+```jsx
+import { useVoiceVisualizer, VoiceVisualizer } from "react-voice-visualizer";
+
+const App = () => {
+  const recorderControls = useVoiceVisualizer();
+  const { audioRef, recordedBlob } = recorderControls;
+
+  return (
+    <div>
+      <VoiceVisualizer controls={recorderControls} />
+      {/* You had to manually attach the ref */}
+      <audio ref={audioRef} src={recordedBlob ? URL.createObjectURL(recordedBlob) : undefined} />
+    </div>
+  );
+};
+```
+
+#### After (v2.x)
+
+In version 2.x, the audio reference is managed internally. You no longer need to pass it manually:
+
+```jsx
+import { useVoiceVisualizer, VoiceVisualizer } from "react-voice-visualizer";
+
+const App = () => {
+  const recorderControls = useVoiceVisualizer();
+  const { recordedBlob } = recorderControls;
+
+  return (
+    <div>
+      {/* The ref is now handled internally - no manual ref needed */}
+      <VoiceVisualizer controls={recorderControls} />
+    </div>
+  );
+};
+```
+
+<Note>
+  The `audioRef` is still available in the `recorderControls` object if you need direct access to the audio element for advanced use cases, but you don't need to manually attach it anymore.
+</Note>
+
+## New Features
+
+<Note>
+  **Preloaded Audio Blob Support**: Version 2.x.x introduces the `setPreloadedAudioBlob` function, allowing you to load audio blobs from various sources such as user inputs, file uploads, or external APIs.
+</Note>
+
+### Working with Preloaded Audio
+
+You can now set preloaded audio blobs using the new `setPreloadedAudioBlob` function. This is particularly useful when you want to:
+
+- Load audio from file uploads
+- Display previously recorded audio
+- Import audio from external sources
+- Work with audio data from APIs
+
+#### Example: Loading Audio from File Input
+
+```jsx
+import { useVoiceVisualizer, VoiceVisualizer } from "react-voice-visualizer";
+
+const App = () => {
+  const recorderControls = useVoiceVisualizer();
+  const { setPreloadedAudioBlob, isPreloadedBlob } = recorderControls;
+
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Set the uploaded file as a preloaded blob
+      setPreloadedAudioBlob(file);
+    }
+  };
+
+  return (
+    <div>
+      <input 
+        type="file" 
+        accept="audio/*" 
+        onChange={handleFileUpload} 
+      />
+      <VoiceVisualizer controls={recorderControls} />
+      {isPreloadedBlob && <p>Preloaded audio is ready for playback</p>}
+    </div>
+  );
+};
+```
+
+#### Example: Loading Audio from a URL
+
+```jsx
+import { useEffect } from "react";
+import { useVoiceVisualizer, VoiceVisualizer } from "react-voice-visualizer";
+
+const App = () => {
+  const recorderControls = useVoiceVisualizer();
+  const { setPreloadedAudioBlob } = recorderControls;
+
+  useEffect(() => {
+    // Fetch audio from a URL and set it as preloaded blob
+    const loadAudioFromUrl = async () => {
+      const response = await fetch("https://example.com/audio.mp3");
+      const blob = await response.blob();
+      setPreloadedAudioBlob(blob);
+    };
+
+    loadAudioFromUrl();
+  }, [setPreloadedAudioBlob]);
+
+  return <VoiceVisualizer controls={recorderControls} />;
+};
+```
+
+## Migration Steps
+
+<Steps>
+  <Step title="Update package version">
+    Update your `package.json` to use version 2.x.x:
+    
+    ```bash
+    npm install react-voice-visualizer@latest
+    ```
+    
+    or
+    
+    ```bash
+    yarn add react-voice-visualizer@latest
+    ```
+  </Step>
+
+  <Step title="Remove manual ref handling">
+    Search your codebase for instances where you manually pass `ref={audioRef}` to audio elements and remove them. The library now handles this internally.
+    
+    **Find and remove:**
+    - `<audio ref={audioRef} ... />`
+    - Any manual ref assignments to audio elements
+  </Step>
+
+  <Step title="Test your audio functionality">
+    After removing manual ref handling, test all audio recording and playback functionality to ensure everything works as expected. The behavior should remain the same, but the implementation is now cleaner.
+  </Step>
+
+  <Step title="Adopt new features (optional)">
+    If you need to work with preloaded audio blobs, implement the `setPreloadedAudioBlob` function in your application. Use the `isPreloadedBlob` flag to track when preloaded audio is available.
+  </Step>
+
+  <Step title="Update your documentation">
+    Update any internal documentation or examples that show the old ref handling pattern to reflect the new automatic ref management.
+  </Step>
+</Steps>
+
+## API Changes Summary
+
+### Removed Requirements
+
+- ❌ No longer need to pass `ref={audioRef}` manually to audio elements
+
+### New Additions
+
+- ✅ `setPreloadedAudioBlob(blob: Blob)` - Set a preloaded audio blob
+- ✅ `isPreloadedBlob: boolean` - Check if a preloaded blob is available
+
+### Unchanged APIs
+
+All other APIs remain the same and continue to work as expected:
+
+- `startRecording()`
+- `stopRecording()`
+- `togglePauseResume()`
+- `clearCanvas()`
+- `saveAudioFile()`
+- All state variables and callbacks
+
+## Getting Help
+
+If you encounter any issues during migration:
+
+1. Check the [demo app](https://react-voice-visualizer.vercel.app/) to see v2.x in action
+2. Review the [API Reference](/api-reference/introduction) for complete documentation
+3. Report issues on [GitHub Issues](https://github.com/YZarytskyi/react-voice-visualizer/issues)
+
+<Note>
+  Need support? Contact the maintainer at [zarytskyi222@gmail.com](mailto:zarytskyi222@gmail.com)
+</Note>

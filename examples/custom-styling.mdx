@@ -1,0 +1,333 @@
+---
+title: 'Custom Styling'
+description: 'Customize colors, dimensions, and visual appearance'
+icon: 'palette'
+---
+
+# Custom Styling Example
+
+This example demonstrates how to customize the visual appearance of the voice visualizer with custom colors, dimensions, and styling options.
+
+## Complete Code
+
+<CodeGroup>
+
+```jsx CustomStyledRecorder.jsx
+import React from 'react';
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function CustomStyledRecorder() {
+  const recorderControls = useVoiceVisualizer();
+
+  return (
+    <div style={{ 
+      padding: '40px',
+      backgroundColor: '#1a1a2e',
+      minHeight: '100vh'
+    }}>
+      <h1 style={{ color: '#00d9ff', textAlign: 'center' }}>
+        Custom Styled Recorder
+      </h1>
+      
+      <VoiceVisualizer 
+        controls={recorderControls}
+        // Dimensions
+        height={250}
+        width="100%"
+        
+        // Colors
+        backgroundColor="#16213e"
+        mainBarColor="#00d9ff"
+        secondaryBarColor="#0f3460"
+        
+        // Bar styling
+        barWidth={3}
+        gap={2}
+        rounded={10}
+        
+        // Animation
+        speed={2}
+        animateCurrentPick={true}
+        
+        // UI customization
+        isControlPanelShown={true}
+        isDownloadAudioButtonShown={true}
+        defaultMicrophoneIconColor="#00d9ff"
+        defaultAudioWaveIconColor="#00d9ff"
+        
+        // Custom class names for further styling
+        mainContainerClassName="custom-recorder"
+        canvasContainerClassName="custom-canvas"
+        controlButtonsClassName="custom-button"
+      />
+    </div>
+  );
+}
+
+export default CustomStyledRecorder;
+```
+
+```tsx CustomStyledRecorder.tsx
+import React from 'react';
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function CustomStyledRecorder() {
+  const recorderControls = useVoiceVisualizer();
+
+  return (
+    <div style={{ 
+      padding: '40px',
+      backgroundColor: '#1a1a2e',
+      minHeight: '100vh'
+    }}>
+      <h1 style={{ color: '#00d9ff', textAlign: 'center' }}>
+        Custom Styled Recorder
+      </h1>
+      
+      <VoiceVisualizer 
+        controls={recorderControls}
+        // Dimensions
+        height={250}
+        width="100%"
+        
+        // Colors
+        backgroundColor="#16213e"
+        mainBarColor="#00d9ff"
+        secondaryBarColor="#0f3460"
+        
+        // Bar styling
+        barWidth={3}
+        gap={2}
+        rounded={10}
+        
+        // Animation
+        speed={2}
+        animateCurrentPick={true}
+        
+        // UI customization
+        isControlPanelShown={true}
+        isDownloadAudioButtonShown={true}
+        defaultMicrophoneIconColor="#00d9ff"
+        defaultAudioWaveIconColor="#00d9ff"
+        
+        // Custom class names for further styling
+        mainContainerClassName="custom-recorder"
+        canvasContainerClassName="custom-canvas"
+        controlButtonsClassName="custom-button"
+      />
+    </div>
+  );
+}
+
+export default CustomStyledRecorder;
+```
+
+</CodeGroup>
+
+## Styling Options
+
+### Color Customization
+
+Control all color aspects of the visualizer:
+
+```jsx
+<VoiceVisualizer 
+  controls={recorderControls}
+  // Canvas background
+  backgroundColor="#16213e"
+  
+  // Active/played portion color
+  mainBarColor="#00d9ff"
+  
+  // Inactive/unplayed portion color
+  secondaryBarColor="#0f3460"
+  
+  // Default UI icon colors
+  defaultMicrophoneIconColor="#00d9ff"
+  defaultAudioWaveIconColor="#00d9ff"
+/>
+```
+
+<Note>
+- **mainBarColor**: Used for the current playback position and recorded portion
+- **secondaryBarColor**: Used for the unplayed portion of recorded audio
+- Colors accept any valid CSS color (hex, rgb, rgba, color names)
+</Note>
+
+### Dimensions
+
+Set the size of the visualizer:
+
+```jsx
+<VoiceVisualizer 
+  controls={recorderControls}
+  height={250}          // Accepts number (px) or string ("50vh", "100%")
+  width="100%"          // Accepts number (px) or string
+/>
+```
+
+### Bar Appearance
+
+Customize the audio visualization bars:
+
+```jsx
+<VoiceVisualizer 
+  controls={recorderControls}
+  barWidth={3}          // Width of each bar in pixels
+  gap={2}               // Gap between bars in pixels
+  rounded={10}          // Border radius for rounded corners
+  speed={2}             // Animation speed (higher = faster updates)
+/>
+```
+
+### Animation Options
+
+```jsx
+<VoiceVisualizer 
+  controls={recorderControls}
+  animateCurrentPick={true}   // Animate the current bar during recording
+  speed={2}                    // Update frequency (1-10)
+/>
+```
+
+## Advanced Styling with CSS
+
+Use custom class names for deeper customization:
+
+```jsx
+<VoiceVisualizer 
+  controls={recorderControls}
+  mainContainerClassName="custom-recorder"
+  canvasContainerClassName="custom-canvas"
+  controlButtonsClassName="custom-button"
+  progressIndicatorClassName="custom-progress"
+  progressIndicatorTimeClassName="custom-time"
+/>
+```
+
+### Custom CSS Example
+
+```css styles.css
+.custom-recorder {
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 217, 255, 0.2);
+  overflow: hidden;
+}
+
+.custom-canvas {
+  border: 2px solid #00d9ff;
+  border-radius: 15px;
+}
+
+.custom-button {
+  background: linear-gradient(135deg, #00d9ff, #0f3460);
+  border: none;
+  color: white;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.custom-button:hover {
+  transform: scale(1.05);
+}
+
+.custom-progress {
+  background: linear-gradient(to bottom, #00d9ff, #0f3460);
+  width: 3px;
+  box-shadow: 0 0 10px #00d9ff;
+}
+```
+
+## UI Control Props
+
+Toggle various UI elements:
+
+```jsx
+<VoiceVisualizer 
+  controls={recorderControls}
+  isControlPanelShown={true}              // Show/hide control buttons
+  isDownloadAudioButtonShown={true}       // Show/hide download button
+  isDefaultUIShown={true}                 // Show/hide default microphone icon
+  isProgressIndicatorShown={true}         // Show/hide playback indicator
+  isProgressIndicatorTimeShown={true}     // Show/hide time display
+  isAudioProcessingTextShown={true}       // Show/hide "Processing Audio..." text
+/>
+```
+
+## Theme Examples
+
+<Tabs>
+  <Tab title="Dark Theme">
+    ```jsx
+    <VoiceVisualizer 
+      controls={recorderControls}
+      backgroundColor="#1a1a1a"
+      mainBarColor="#00ff88"
+      secondaryBarColor="#333333"
+      defaultMicrophoneIconColor="#00ff88"
+    />
+    ```
+  </Tab>
+  
+  <Tab title="Light Theme">
+    ```jsx
+    <VoiceVisualizer 
+      controls={recorderControls}
+      backgroundColor="#ffffff"
+      mainBarColor="#3b82f6"
+      secondaryBarColor="#e5e7eb"
+      defaultMicrophoneIconColor="#3b82f6"
+    />
+    ```
+  </Tab>
+  
+  <Tab title="Neon Theme">
+    ```jsx
+    <VoiceVisualizer 
+      controls={recorderControls}
+      backgroundColor="#0a0a0a"
+      mainBarColor="#ff00ff"
+      secondaryBarColor="#1a001a"
+      defaultMicrophoneIconColor="#ff00ff"
+      rounded={15}
+      barWidth={4}
+    />
+    ```
+  </Tab>
+</Tabs>
+
+## Custom Processing Text
+
+Replace the default "Processing Audio..." text:
+
+```jsx
+<VoiceVisualizer 
+  controls={recorderControls}
+  audioProcessingElem={
+    <div style={{ color: '#00d9ff' }}>
+      <span>🎵 Processing your audio...</span>
+    </div>
+  }
+/>
+```
+
+<Tip>
+Combine multiple styling props to create unique designs that match your application's brand.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="File Upload" icon="file-arrow-up" href="/examples/file-upload">
+    Load existing audio files
+  </Card>
+  <Card title="Callbacks" icon="arrows-rotate" href="/examples/callbacks">
+    Handle recording events
+  </Card>
+  <Card title="Component Props" icon="book" href="/api/voice-visualizer">
+    Full props reference
+  </Card>
+</CardGroup>

@@ -1,0 +1,153 @@
+---
+title: "Introduction"
+description: "A comprehensive React library for audio recording and real-time visualization using the Web Audio API"
+---
+
+<div style={{
+  background: 'linear-gradient(135deg, #cb0404 0%, #e37b84 100%)',
+  borderRadius: '24px',
+  padding: '48px 32px',
+  marginBottom: '32px',
+  color: 'white'
+}}>
+  <h1 style={{
+    fontSize: '56px',
+    fontWeight: '700',
+    fontFamily: 'Inter, sans-serif',
+    marginBottom: '16px',
+    color: 'white'
+  }}>React Voice Visualizer</h1>
+  <p style={{
+    fontSize: '20px',
+    fontFamily: 'Inter, sans-serif',
+    opacity: '0.95',
+    marginBottom: '0'
+  }}>
+    Build beautiful audio recording and visualization experiences with React and the Web Audio API
+  </p>
+</div>
+
+## Overview
+
+React Voice Visualizer is a powerful, highly customizable library that simplifies audio recording and real-time visualization in React applications. Built on top of the Web Audio API and MediaRecorder API, it provides a complete solution for capturing, visualizing, and manipulating audio recordings.
+
+<CardGroup cols={2}>
+  <Card title="Quick Start" icon="rocket" href="/quickstart">
+    Get up and running in under 5 minutes
+  </Card>
+  <Card title="Live Demo" icon="play" href="https://react-voice-visualizer.vercel.app/">
+    Try the interactive demo application
+  </Card>
+  <Card title="API Reference" icon="code" href="/api/use-voice-visualizer">
+    Explore the complete API documentation
+  </Card>
+  <Card title="Examples" icon="book-open" href="/examples/basic-recorder">
+    View real-world implementation examples
+  </Card>
+</CardGroup>
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Real-Time Visualization" icon="waveform">
+    Visualize audio data in real-time as you record, with customizable waveform rendering
+  </Card>
+  <Card title="Audio Recording" icon="microphone">
+    Capture high-quality audio using the MediaRecorder API with minimal setup
+  </Card>
+  <Card title="Playback Controls" icon="circle-play">
+    Built-in controls for playing, pausing, and seeking through recorded audio
+  </Card>
+  <Card title="Fully Customizable" icon="palette">
+    Customize colors, dimensions, animation speed, and visual appearance
+  </Card>
+  <Card title="TypeScript Support" icon="code">
+    Complete type definitions for a superior developer experience
+  </Card>
+  <Card title="Responsive Design" icon="mobile">
+    Adapts seamlessly to mobile and desktop devices
+  </Card>
+  <Card title="Preloaded Audio" icon="file-audio">
+    Load and visualize existing audio files from any source
+  </Card>
+  <Card title="Lifecycle Callbacks" icon="arrows-rotate">
+    Hook into recording and playback events for custom behavior
+  </Card>
+</CardGroup>
+
+## Installation
+
+Get started by installing the package via npm or yarn:
+
+<CodeGroup>
+
+```bash npm
+npm install react-voice-visualizer
+```
+
+```bash yarn
+yarn add react-voice-visualizer
+```
+
+```bash pnpm
+pnpm add react-voice-visualizer
+```
+
+</CodeGroup>
+
+## Basic Usage
+
+Here's a minimal example to get you started:
+
+```tsx App.tsx
+import { useVoiceVisualizer, VoiceVisualizer } from "react-voice-visualizer";
+
+function App() {
+  const recorderControls = useVoiceVisualizer();
+
+  return <VoiceVisualizer controls={recorderControls} />;
+}
+
+export default App;
+```
+
+<Note>
+  The library requires React 18.2.0 or later and React DOM 18.2.0 or later as peer dependencies.
+</Note>
+
+## Why React Voice Visualizer?
+
+<AccordionGroup>
+  <Accordion title="Simple Integration">
+    With just two imports and a few lines of code, you can add professional audio recording capabilities to your React application. No complex setup or configuration required.
+  </Accordion>
+  
+  <Accordion title="Production Ready">
+    Built with TypeScript and thoroughly tested, the library is production-ready and used in real-world applications. It handles edge cases and provides comprehensive error handling.
+  </Accordion>
+  
+  <Accordion title="Highly Customizable">
+    From visual appearance to behavior, every aspect of the library can be customized to match your application's design and requirements. Over 30 customization options are available.
+  </Accordion>
+  
+  <Accordion title="Active Development">
+    The library is actively maintained with regular updates, bug fixes, and new features based on community feedback.
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Installation Guide" icon="download" href="/installation">
+    Detailed installation instructions and requirements
+  </Card>
+  <Card title="Quickstart Tutorial" icon="rocket" href="/quickstart">
+    Build your first voice recorder in minutes
+  </Card>
+  <Card title="Customization Guide" icon="paintbrush" href="/guides/customization">
+    Learn how to customize the visualizer appearance
+  </Card>
+  <Card title="Migration Guide" icon="arrow-up" href="/migration/v2">
+    Upgrading from version 1.x to 2.x
+  </Card>
+</CardGroup>

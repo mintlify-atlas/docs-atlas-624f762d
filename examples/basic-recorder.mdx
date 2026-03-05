@@ -1,0 +1,144 @@
+---
+title: 'Basic Recorder'
+description: 'Complete implementation of a basic audio recorder'
+icon: 'microphone'
+---
+
+# Basic Recorder Example
+
+This example shows a complete, minimal implementation of the React Voice Visualizer for recording audio.
+
+## Complete Code
+
+<CodeGroup>
+
+```jsx App.jsx
+import React from 'react';
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function App() {
+  // Initialize the hook with no parameters for basic usage
+  const recorderControls = useVoiceVisualizer();
+
+  return (
+    <div style={{ padding: '20px' }}>
+      <h1>Voice Recorder</h1>
+      <VoiceVisualizer 
+        controls={recorderControls}
+        height={200}
+        width="100%"
+      />
+    </div>
+  );
+}
+
+export default App;
+```
+
+```tsx App.tsx
+import React from 'react';
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function App() {
+  // Initialize the hook with no parameters for basic usage
+  const recorderControls = useVoiceVisualizer();
+
+  return (
+    <div style={{ padding: '20px' }}>
+      <h1>Voice Recorder</h1>
+      <VoiceVisualizer 
+        controls={recorderControls}
+        height={200}
+        width="100%"
+      />
+    </div>
+  );
+}
+
+export default App;
+```
+
+</CodeGroup>
+
+## How It Works
+
+### 1. Import the Components
+
+First, import both the hook and the visualizer component:
+
+```jsx
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+```
+
+### 2. Initialize the Hook
+
+The `useVoiceVisualizer` hook manages all the recording state and provides controls:
+
+```jsx
+const recorderControls = useVoiceVisualizer();
+```
+
+This returns a `Controls` object with properties and methods for:
+- Starting/stopping recording
+- Playing back recorded audio
+- Accessing audio data and metadata
+
+### 3. Render the Visualizer
+
+Pass the controls to the `VoiceVisualizer` component:
+
+```jsx
+<VoiceVisualizer 
+  controls={recorderControls}
+  height={200}
+  width="100%"
+/>
+```
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Recording" icon="record-vinyl">
+    Click the microphone button to start recording. The visualizer shows live audio waveforms.
+  </Card>
+  <Card title="Playback" icon="play">
+    After recording, use the play/pause button to listen to your recording.
+  </Card>
+  <Card title="Controls" icon="sliders">
+    Built-in controls for pause/resume during recording and playback.
+  </Card>
+  <Card title="Clear" icon="trash">
+    Clear button to reset and start a new recording.
+  </Card>
+</CardGroup>
+
+## Available Controls
+
+The `recorderControls` object provides access to:
+
+- **State**: `isRecordingInProgress`, `isPausedRecording`, `isCleared`
+- **Audio Data**: `recordedBlob`, `audioData`, `bufferFromRecordedBlob`
+- **Time Info**: `recordingTime`, `duration`, `currentAudioTime`
+- **Methods**: `startRecording()`, `stopRecording()`, `togglePauseResume()`, `clearCanvas()`
+- **Formatted Time**: `formattedRecordingTime`, `formattedDuration`, `formattedRecordedAudioCurrentTime`
+
+<Note>
+The component automatically requests microphone permissions when the user clicks the record button.
+</Note>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Custom Styling" icon="palette" href="/examples/custom-styling">
+    Learn how to customize colors and appearance
+  </Card>
+  <Card title="Lifecycle Callbacks" icon="arrows-rotate" href="/examples/callbacks">
+    Add callbacks for recording events
+  </Card>
+  <Card title="File Upload" icon="file-arrow-up" href="/examples/file-upload">
+    Load and visualize existing audio files
+  </Card>
+  <Card title="API Reference" icon="book" href="/api/use-voice-visualizer">
+    Full API documentation
+  </Card>
+</CardGroup>

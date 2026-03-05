@@ -1,0 +1,476 @@
+---
+title: 'File Upload'
+description: 'Load and visualize existing audio files'
+icon: 'file-arrow-up'
+---
+
+# File Upload Example
+
+This example demonstrates how to load and visualize existing audio files using the `setPreloadedAudioBlob` method.
+
+## Complete Code
+
+<CodeGroup>
+
+```jsx AudioFileUploader.jsx
+import React, { useRef } from 'react';
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function AudioFileUploader() {
+  const recorderControls = useVoiceVisualizer();
+  const fileInputRef = useRef(null);
+
+  const handleFileChange = (event) => {
+    const file = event.target.files?.[0];
+    
+    if (file) {
+      // Check if file is an audio file
+      if (!file.type.startsWith('audio/')) {
+        alert('Please select an audio file');
+        return;
+      }
+
+      // Load the audio file into the visualizer
+      recorderControls.setPreloadedAudioBlob(file);
+    }
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  return (
+    <div style={{ padding: '20px' }}>
+      <h1>Audio File Visualizer</h1>
+      
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="audio/*"
+        onChange={handleFileChange}
+        style={{ display: 'none' }}
+      />
+      
+      {/* Upload button */}
+      <button 
+        onClick={handleUploadClick}
+        style={{
+          padding: '10px 20px',
+          marginBottom: '20px',
+          backgroundColor: '#3b82f6',
+          color: 'white',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer'
+        }}
+      >
+        Upload Audio File
+      </button>
+      
+      {/* Display current file info */}
+      {recorderControls.isPreloadedBlob && (
+        <div style={{ marginBottom: '20px', color: '#666' }}>
+          <p>File loaded successfully! Duration: {recorderControls.formattedDuration}</p>
+        </div>
+      )}
+      
+      {/* Visualizer */}
+      <VoiceVisualizer 
+        controls={recorderControls}
+        height={200}
+        width="100%"
+        isControlPanelShown={true}
+        isDownloadAudioButtonShown={true}
+      />
+    </div>
+  );
+}
+
+export default AudioFileUploader;
+```
+
+```tsx AudioFileUploader.tsx
+import React, { useRef, ChangeEvent } from 'react';
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function AudioFileUploader() {
+  const recorderControls = useVoiceVisualizer();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    
+    if (file) {
+      // Check if file is an audio file
+      if (!file.type.startsWith('audio/')) {
+        alert('Please select an audio file');
+        return;
+      }
+
+      // Load the audio file into the visualizer
+      recorderControls.setPreloadedAudioBlob(file);
+    }
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  return (
+    <div style={{ padding: '20px' }}>
+      <h1>Audio File Visualizer</h1>
+      
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="audio/*"
+        onChange={handleFileChange}
+        style={{ display: 'none' }}
+      />
+      
+      {/* Upload button */}
+      <button 
+        onClick={handleUploadClick}
+        style={{
+          padding: '10px 20px',
+          marginBottom: '20px',
+          backgroundColor: '#3b82f6',
+          color: 'white',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer'
+        }}
+      >
+        Upload Audio File
+      </button>
+      
+      {/* Display current file info */}
+      {recorderControls.isPreloadedBlob && (
+        <div style={{ marginBottom: '20px', color: '#666' }}>
+          <p>File loaded successfully! Duration: {recorderControls.formattedDuration}</p>
+        </div>
+      )}
+      
+      {/* Visualizer */}
+      <VoiceVisualizer 
+        controls={recorderControls}
+        height={200}
+        width="100%"
+        isControlPanelShown={true}
+        isDownloadAudioButtonShown={true}
+      />
+    </div>
+  );
+}
+
+export default AudioFileUploader;
+```
+
+</CodeGroup>
+
+## How It Works
+
+### 1. Set Up File Input
+
+Create a file input element to allow users to select audio files:
+
+```jsx
+const fileInputRef = useRef(null);
+
+<input
+  ref={fileInputRef}
+  type="file"
+  accept="audio/*"  // Only accept audio files
+  onChange={handleFileChange}
+  style={{ display: 'none' }}
+/>
+```
+
+### 2. Handle File Selection
+
+When a file is selected, validate it and load it into the visualizer:
+
+```jsx
+const handleFileChange = (event) => {
+  const file = event.target.files?.[0];
+  
+  if (file) {
+    // Validate file type
+    if (!file.type.startsWith('audio/')) {
+      alert('Please select an audio file');
+      return;
+    }
+
+    // Load the file - this is the key method!
+    recorderControls.setPreloadedAudioBlob(file);
+  }
+};
+```
+
+### 3. Track Loading State
+
+Use the `isPreloadedBlob` property to know when a file has been loaded:
+
+```jsx
+{recorderControls.isPreloadedBlob && (
+  <p>File loaded! Duration: {recorderControls.formattedDuration}</p>
+)}
+```
+
+## Key Control Properties
+
+When working with preloaded audio files, these properties are useful:
+
+- **`setPreloadedAudioBlob(blob: Blob)`**: Method to load an audio file
+- **`isPreloadedBlob`**: Boolean indicating if a file was loaded (not recorded)
+- **`recordedBlob`**: The loaded Blob object
+- **`duration`**: Duration of the audio in seconds
+- **`formattedDuration`**: Formatted duration string (MM:SS)
+- **`bufferFromRecordedBlob`**: Decoded AudioBuffer for visualization
+- **`isProcessingRecordedAudio`**: Boolean indicating if the file is being processed
+
+## Drag and Drop Example
+
+Here's an enhanced version with drag-and-drop support:
+
+<CodeGroup>
+
+```jsx DragDropUploader.jsx
+import React, { useState } from 'react';
+import { useVoiceVisualizer, VoiceVisualizer } from 'react-voice-visualizer';
+
+function DragDropUploader() {
+  const recorderControls = useVoiceVisualizer();
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith('audio/')) {
+      recorderControls.setPreloadedAudioBlob(file);
+    } else {
+      alert('Please drop an audio file');
+    }
+  };
+
+  return (
+    <div style={{ padding: '20px' }}>
+      <div
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        style={{
+          border: `2px dashed ${isDragging ? '#3b82f6' : '#ccc'}`,
+          borderRadius: '10px',
+          padding: '40px',
+          textAlign: 'center',
+          backgroundColor: isDragging ? '#eff6ff' : 'transparent',
+          marginBottom: '20px'
+        }}
+      >
+        <p>Drag and drop an audio file here</p>
+      </div>
+      
+      <VoiceVisualizer 
+        controls={recorderControls}
+        height={200}
+        width="100%"
+      />
+    </div>
+  );
+}
+
+export default DragDropUploader;
+```
+
+</CodeGroup>
+
+## Fetch Remote Audio
+
+Load audio files from a URL:
+
+```jsx
+const loadRemoteAudio = async (url) => {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    recorderControls.setPreloadedAudioBlob(blob);
+  } catch (error) {
+    console.error('Error loading audio:', error);
+  }
+};
+
+// Usage
+loadRemoteAudio('https://example.com/audio.mp3');
+```
+
+## Supported Audio Formats
+
+The visualizer supports all audio formats that the browser's Web Audio API can decode:
+
+<CardGroup cols={2}>
+  <Card title="Common Formats" icon="check">
+    - MP3 (.mp3)
+    - WAV (.wav)
+    - OGG (.ogg)
+    - WebM (.webm)
+  </Card>
+  <Card title="Other Formats" icon="circle-info">
+    - M4A (.m4a)
+    - AAC (.aac)
+    - FLAC (.flac)
+    - Opus (.opus)
+  </Card>
+</CardGroup>
+
+<Note>
+Format support may vary by browser. MP3, WAV, and OGG have the widest support.
+</Note>
+
+## Error Handling
+
+Handle errors when loading audio files:
+
+```jsx
+const handleFileChange = (event) => {
+  const file = event.target.files?.[0];
+  
+  if (file) {
+    if (!file.type.startsWith('audio/')) {
+      alert('Please select an audio file');
+      return;
+    }
+    
+    try {
+      recorderControls.setPreloadedAudioBlob(file);
+    } catch (error) {
+      console.error('Error loading file:', error);
+      alert('Failed to load audio file');
+    }
+  }
+};
+
+// Monitor for processing errors
+if (recorderControls.error) {
+  console.error('Audio processing error:', recorderControls.error);
+}
+```
+
+## Processing State
+
+Show loading indicators while the audio is being processed:
+
+```jsx
+{recorderControls.isProcessingRecordedAudio && (
+  <div>
+    <p>Processing audio file...</p>
+  </div>
+)}
+
+{recorderControls.isAvailableRecordedAudio && (
+  <div>
+    <p>Audio ready to play!</p>
+  </div>
+)}
+```
+
+## Complete Example with All Features
+
+```jsx
+function AdvancedAudioUploader() {
+  const recorderControls = useVoiceVisualizer();
+  const fileInputRef = useRef(null);
+  const [fileName, setFileName] = useState('');
+
+  const handleFileChange = (event) => {
+    const file = event.target.files?.[0];
+    
+    if (file) {
+      if (!file.type.startsWith('audio/')) {
+        alert('Please select an audio file');
+        return;
+      }
+      
+      setFileName(file.name);
+      recorderControls.setPreloadedAudioBlob(file);
+    }
+  };
+
+  const handleClear = () => {
+    recorderControls.clearCanvas();
+    setFileName('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  return (
+    <div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="audio/*"
+        onChange={handleFileChange}
+        style={{ display: 'none' }}
+      />
+      
+      <button onClick={() => fileInputRef.current?.click()}>
+        Upload Audio
+      </button>
+      
+      {fileName && <p>Current file: {fileName}</p>}
+      
+      {recorderControls.isProcessingRecordedAudio && (
+        <p>Processing {fileName}...</p>
+      )}
+      
+      {recorderControls.error && (
+        <p style={{ color: 'red' }}>
+          Error: {recorderControls.error.message}
+        </p>
+      )}
+      
+      <VoiceVisualizer 
+        controls={recorderControls}
+        height={200}
+        width="100%"
+      />
+      
+      {recorderControls.isPreloadedBlob && (
+        <button onClick={handleClear}>Clear and Upload New File</button>
+      )}
+    </div>
+  );
+}
+```
+
+<Tip>
+The `setPreloadedAudioBlob` method accepts any Blob object, so you can load audio from various sources: file uploads, fetch requests, or even generated audio.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Callbacks" icon="arrows-rotate" href="/examples/callbacks">
+    Handle playback events for uploaded files
+  </Card>
+  <Card title="Custom Styling" icon="palette" href="/examples/custom-styling">
+    Style the visualizer for uploaded audio
+  </Card>
+  <Card title="API Reference" icon="book" href="/api/use-voice-visualizer">
+    Full hook documentation
+  </Card>
+</CardGroup>
